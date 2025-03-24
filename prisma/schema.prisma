@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// User model - Clerk과 연동되는 사용자 정보
+model User {
+  id            String    @id // Clerk의 user ID를 그대로 사용
+  email         String    @unique // Clerk에서 관리하는 이메일
+  name          String?   // Clerk의 사용자 이름
+  imageUrl      String?   // Clerk의 프로필 이미지 URL
+  isGardener    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  gardens       Garden[]  // 정원사가 만든 정원들
+  answers       Answer[]  // 사용자가 작성한 답변들
+}
+
+// Garden model - 정원(토픽) 정보
+model Garden {
+  id          String    @id @default(cuid())
+  title       String
+  description String?   @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  gardener    User      @relation(fields: [gardenerId], references: [id], onDelete: Cascade)
+  gardenerId  String
+  questions   Question[]
+
+  @@index([gardenerId])
+}
+
+// Question model - 정원사가 작성한 질문
+model Question {
+  id          String    @id @default(cuid())
+  title       String
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  garden      Garden    @relation(fields: [gardenId], references: [id], onDelete: Cascade)
+  gardenId    String
+  answers     Answer[]
+
+  @@index([gardenId])
+}
+
+// Answer model - 사용자가 작성한 답변
+model Answer {
+  id          String    @id @default(cuid())
+  title       String    // 유저가 직접 작성한 답변의 제목
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  question    Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId  String
+
+  @@index([userId])
+  @@index([questionId])
+}
