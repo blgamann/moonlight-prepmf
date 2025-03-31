@@ -15,8 +15,8 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="ko">
-        <body>
+      <html lang="ko" className="bg-black">
+        <body className="overscroll-none bg-black">
           {/* <Header /> */}
           {children}
         </body>
