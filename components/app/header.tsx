@@ -5,32 +5,29 @@ import { Search, ArrowLeft, X } from "lucide-react";
 import { UserButton, useAuth } from "@clerk/nextjs";
 import SearchPage from "../../pages/search";
 
-interface HeaderProps {
-  onSearchChange?: (isActive: boolean, value: string) => void;
-}
-
-// 검색 관련 공통 스타일 및 컴포넌트
+// Common search input style
 const SEARCH_INPUT_STYLE =
   "w-full py-2 pl-11 pr-4 rounded-3xl bg-white/5 border border-white/10 text-white transition-all duration-200 focus:outline-none focus:border-[#36bccf] focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(54,188,207,0.2)] placeholder-[#94a3b8]";
 
-// 검색 모달 컴포넌트
+interface SearchModalProps {
+  searchValue: string;
+  setSearchValue: (value: string) => void;
+  onSearchChange?: (isActive: boolean, value: string) => void;
+  onClose: () => void;
+}
+
 const SearchModal = ({
   searchValue,
   setSearchValue,
-  onSearchChange,
   onClose,
-}: {
-  searchValue: string;
-  setSearchValue: (value: string) => void;
-  onSearchChange: (isActive: boolean, value: string) => void;
-  onClose: () => void;
-}) => {
+  onSearchChange = () => {},
+}: SearchModalProps) => {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const escPressedRef = useRef(false);
   const isComposingRef = useRef(false);
 
-  // 포커스 처리
+  // Focus handling
   const focusSearchInput = useCallback(() => {
     setTimeout(() => {
       searchInputRef.current?.focus();
@@ -41,7 +38,7 @@ const SearchModal = ({
     focusSearchInput();
   }, [focusSearchInput]);
 
-  // 문서 레벨 ESC 이벤트
+  // ESC key event handling for the entire document
   useEffect(() => {
     const handleDocumentKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -50,12 +47,10 @@ const SearchModal = ({
       }
     };
     document.addEventListener("keydown", handleDocumentKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleDocumentKeyDown);
-    };
+    return () => document.removeEventListener("keydown", handleDocumentKeyDown);
   }, [onClose]);
 
-  // 입력창 내 ESC 처리
+  // ESC key handling within the input field and composition event management
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Escape") {
@@ -86,7 +81,7 @@ const SearchModal = ({
     }
   }, [onSearchChange, setSearchValue]);
 
-  // 모달 외부 클릭 시 닫기
+  // Close when clicking outside the modal
   const handleOutsideClick = useCallback(
     (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -98,9 +93,7 @@ const SearchModal = ({
 
   useEffect(() => {
     document.addEventListener("mousedown", handleOutsideClick);
-    return () => {
-      document.removeEventListener("mousedown", handleOutsideClick);
-    };
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [handleOutsideClick]);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,27 +113,27 @@ const SearchModal = ({
     <div className="fixed inset-0 z-30">
       <div className="fixed inset-y-0 right-0 left-[72px] bg-black/70 backdrop-blur-sm">
         <div ref={modalRef} className="h-full">
-          {/* 상단 검색 헤더 */}
+          {/* Top search header */}
           <div className="sticky top-0 bg-[#111] border-b border-white/10 shadow-lg z-40">
             <div className="p-6">
               <div className="relative">
                 <div className={`relative ${SEARCH_INPUT_STYLE}`}>
-                  {/* 뒤로가기 버튼 */}
+                  {/* Back button */}
                   <button
                     type="button"
                     className="absolute left-2.5 top-1/2 -translate-y-1/2 z-10 bg-transparent border-0 w-6 h-6 flex items-center justify-center text-[#94a3b8] hover:text-[#36bccf] transition-colors duration-200 cursor-pointer"
                     onClick={onClose}
-                    aria-label="뒤로가기"
+                    aria-label="Back"
                   >
                     <ArrowLeft className="w-[18px] h-[18px]" />
                   </button>
 
-                  {/* 검색 입력창 */}
+                  {/* Search input field */}
                   <input
                     ref={searchInputRef}
                     type="text"
                     className="w-full bg-transparent focus:outline-none pl-2"
-                    placeholder="검색"
+                    placeholder="Search"
                     value={searchValue}
                     onChange={handleSearchChange}
                     onKeyDown={handleKeyDown}
@@ -149,13 +142,13 @@ const SearchModal = ({
                     autoFocus
                   />
 
-                  {/* 검색어 지우기 버튼 */}
+                  {/* Clear search button */}
                   {searchValue && (
                     <button
                       type="button"
                       className="absolute right-3 top-1/2 -translate-y-1/2 z-10 bg-transparent border-0 w-6 h-6 rounded-full flex items-center justify-center text-[#94a3b8] hover:text-white hover:bg-white/10 transition-all cursor-pointer"
                       onClick={handleClearSearch}
-                      aria-label="검색어 지우기"
+                      aria-label="Clear search"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -165,7 +158,7 @@ const SearchModal = ({
             </div>
           </div>
 
-          {/* 검색 결과 영역 */}
+          {/* Search results area */}
           <div className="p-6 overflow-auto">
             <SearchPage searchValue={searchValue} />
           </div>
@@ -175,49 +168,40 @@ const SearchModal = ({
   );
 };
 
-export default function Header({ onSearchChange }: HeaderProps) {
+export default function Header() {
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const { isSignedIn } = useAuth();
 
-  // Default empty function if onSearchChange is not provided
-  const handleSearchChange = useCallback(
-    (isActive: boolean, value: string) => {
-      onSearchChange?.(isActive, value);
-    },
-    [onSearchChange]
-  );
-
+  // Using empty dependency array to avoid dependency on searchValue
   const openSearchModal = useCallback(() => {
     setIsSearchModalOpen(true);
-    handleSearchChange(true, searchValue);
-  }, [handleSearchChange, searchValue]);
+  }, []);
 
   const closeSearchModal = useCallback(() => {
     setIsSearchModalOpen(false);
     setSearchValue("");
-    handleSearchChange(false, "");
-  }, [handleSearchChange]);
+  }, []);
 
   return (
     <>
       <header className="flex items-center justify-between p-6 border-b border-white/10 bg-[#111] relative z-10">
         <div className="relative flex-1">
-          {/* 헤더 검색 버튼 */}
+          {/* Header search button */}
           <div
             className={`relative ${SEARCH_INPUT_STYLE} cursor-pointer hover:bg-white/8 hover:border-[#36bccf] hover:text-white transition-colors duration-200 group`}
             onClick={openSearchModal}
           >
-            {/* 검색 아이콘 */}
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 cursor-pointer">
+            {/* Search icon */}
+            <div className="absolute left-4 top-1/2 -translate-y-1/2">
               <Search className="w-[18px] h-[18px] text-[#94a3b8] group-hover:text-[#36bccf] transition-colors duration-200" />
             </div>
 
-            {/* 검색 입력창 (비활성 상태) */}
+            {/* Search input field (inactive state) */}
             <input
               type="text"
               className="w-full bg-transparent focus:outline-none pl-2"
-              placeholder="검색"
+              placeholder="Search"
               value=""
               readOnly
               onClick={openSearchModal}
@@ -239,7 +223,6 @@ export default function Header({ onSearchChange }: HeaderProps) {
         <SearchModal
           searchValue={searchValue}
           setSearchValue={setSearchValue}
-          onSearchChange={handleSearchChange}
           onClose={closeSearchModal}
         />
       )}

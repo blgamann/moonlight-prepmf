@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-// import Header from "@/components/header";
+import Sidebar from "@/components/app/sidebar";
+import Header from "@/components/app/header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -17,8 +18,11 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="ko" className="bg-black">
         <body className="overscroll-none bg-black">
-          {/* <Header /> */}
-          {children}
+          <Sidebar />
+          <div className="ml-[72px] w-[calc(100%-72px)]">
+            <Header />
+            {children}
+          </div>
         </body>
       </html>
     </ClerkProvider>
