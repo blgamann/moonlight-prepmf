@@ -201,7 +201,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex items-center justify-between p-6 border-b border-white/10 bg-[#111] fixed top-0 left-[72px] right-0 z-20">
+      <header className="flex items-center justify-between p-6 border-b border-white/10 bg-black fixed top-0 left-[72px] right-0 z-20">
         <div className="relative flex-1">
           {/* Header search button */}
           <div

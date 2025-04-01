@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import Sidebar from "@/components/app/sidebar";
-import Header, { HEADER_HEIGHT } from "@/components/app/header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,16 +13,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="ko" className="bg-black">
-        <body className="overscroll-none bg-black">
-          <Sidebar />
-          <div className="ml-[72px] w-[calc(100%-72px)]">
-            <Header />
-            <div style={{ marginTop: HEADER_HEIGHT }}>{children}</div>
-          </div>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="ko" className="bg-black">
+      <body>
+        <ClerkProvider>{children}</ClerkProvider>
+      </body>
+    </html>
   );
 }

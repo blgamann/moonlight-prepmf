@@ -68,7 +68,7 @@ export default function Home() {
 
           {/* CTA Button with hover animations as in landing.html */}
           <a
-            href="#"
+            href="/app"
             className="cta-button group inline-flex items-center px-8 py-4 bg-[#6dd1e4] text-white font-bold rounded-full mt-8 transition-all hover:-translate-y-2 hover:shadow-lg hover:shadow-[#6dd1e4]/20"
           >
             가든 둘러보기

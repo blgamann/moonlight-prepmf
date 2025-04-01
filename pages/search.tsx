@@ -6,7 +6,7 @@ interface SearchPageProps {
 
 export default function SearchPage({ searchValue }: SearchPageProps) {
   return (
-    <main className="p-6">
+    <main className="px-8">
       <div className="flex items-center gap-2 mb-6">
         <Search className="w-5 h-5 text-[#36bccf]" />
         <h1 className="text-2xl font-bold text-white">검색 결과</h1>
