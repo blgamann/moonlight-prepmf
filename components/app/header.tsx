@@ -9,6 +9,9 @@ import SearchPage from "../../pages/search";
 const SEARCH_INPUT_STYLE =
   "w-full py-2 pl-11 pr-4 rounded-3xl bg-white/5 border border-white/10 text-white transition-all duration-200 focus:outline-none focus:border-[#36bccf] focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(54,188,207,0.2)] placeholder-[#94a3b8]";
 
+// Export header height for other components to use for top margin
+export const HEADER_HEIGHT = 73; // 24px (p-6) * 2 + remaining content height
+
 interface SearchModalProps {
   searchValue: string;
   setSearchValue: (value: string) => void;
@@ -111,10 +114,12 @@ const SearchModal = ({
 
   return (
     <div className="fixed inset-0 z-30">
-      <div className="fixed inset-y-0 right-0 left-[72px] bg-black/70 backdrop-blur-sm">
+      {/* Dark overlay that only covers the content area, not the sidebar */}
+      <div className="fixed inset-y-0 left-[72px] right-0 bg-black opacity-100"></div>
+      <div className="fixed inset-y-0 right-0 left-[72px] bg-black z-40">
         <div ref={modalRef} className="h-full">
           {/* Top search header */}
-          <div className="sticky top-0 bg-[#111] border-b border-white/10 shadow-lg z-40">
+          <div className="sticky top-0 bg-black border-b border-white/10 shadow-lg z-40">
             <div className="p-6">
               <div className="relative">
                 <div className={`relative ${SEARCH_INPUT_STYLE}`}>
@@ -176,16 +181,27 @@ export default function Header() {
   // Using empty dependency array to avoid dependency on searchValue
   const openSearchModal = useCallback(() => {
     setIsSearchModalOpen(true);
+    // Prevent scrolling on the body when search modal is open
+    document.body.style.overflow = "hidden";
   }, []);
 
   const closeSearchModal = useCallback(() => {
     setIsSearchModalOpen(false);
     setSearchValue("");
+    // Restore scrolling on the body when search modal is closed
+    document.body.style.overflow = "";
+  }, []);
+
+  // Cleanup effect to ensure scrolling is restored if component unmounts while modal is open
+  useEffect(() => {
+    return () => {
+      document.body.style.overflow = "";
+    };
   }, []);
 
   return (
     <>
-      <header className="flex items-center justify-between p-6 border-b border-white/10 bg-[#111] relative z-10">
+      <header className="flex items-center justify-between p-6 border-b border-white/10 bg-[#111] fixed top-0 left-[72px] right-0 z-20">
         <div className="relative flex-1">
           {/* Header search button */}
           <div
@@ -218,6 +234,9 @@ export default function Header() {
           )}
         </div>
       </header>
+
+      {/* Spacer div with the same height as the header to prevent content from being hidden */}
+      <div style={{ height: HEADER_HEIGHT }} />
 
       {isSearchModalOpen && (
         <SearchModal

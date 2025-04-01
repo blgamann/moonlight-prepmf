@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Sidebar from "@/components/app/sidebar";
-import Header from "@/components/app/header";
+import Header, { HEADER_HEIGHT } from "@/components/app/header";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,7 +21,7 @@ export default function RootLayout({
           <Sidebar />
           <div className="ml-[72px] w-[calc(100%-72px)]">
             <Header />
-            {children}
+            <div style={{ marginTop: HEADER_HEIGHT }}>{children}</div>
           </div>
         </body>
       </html>
