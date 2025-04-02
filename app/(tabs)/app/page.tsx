@@ -2,10 +2,10 @@
 
 import MainPage from "@/pages/main";
 
-export default function App() {
+export default function AppPage() {
   return (
-    <div className="bg-black overflow-hidden mt-5">
+    <main className="bg-black overflow-hidden mt-5">
       <MainPage />
-    </div>
+    </main>
   );
 }
