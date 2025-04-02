@@ -1,0 +1,422 @@
+[
+  {
+    "id": 1,
+    "title": "한강의「채식주의자」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book1.jpeg",
+    "questionText": "폭력과 욕망의 세계에서 우리는 어떻게 구원받을 수 있을까?",
+    "description": "인간의 폭력성과 욕망, 그리고 구원에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 76,
+      "memberCount": 327,
+      "questionCount": 13,
+      "answerCount": 501
+    }
+  },
+  {
+    "id": 2,
+    "title": "베르나르 베르베르의「개미」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book2.jpg",
+    "questionText": "문명의 진화는 우리를 어디로 이끄는가?",
+    "description": "진화론의 혁명적 의미는 무엇인지 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 56,
+      "memberCount": 287,
+      "questionCount": 11,
+      "answerCount": 432
+    }
+  },
+  {
+    "id": 3,
+    "title": "김호연의「불편한 편의점」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book3.jpeg",
+    "questionText": "평범한 일상 속에 숨겨진 특별함은 무엇일까?",
+    "description": "일상 속 작은 순간들이 가진 특별한 의미에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 42,
+      "memberCount": 198,
+      "questionCount": 8,
+      "answerCount": 245
+    }
+  },
+  {
+    "id": 4,
+    "title": "무라세 다케시의「세상의 마지막 기차역」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book4.jpeg",
+    "questionText": "당신의 마지막 정거장에서 무엇을 선택하시겠습니까?",
+    "description": "삶과 죽음의 경계에서 마주하는 우리의 선택과 후회에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 38,
+      "memberCount": 156,
+      "questionCount": 9,
+      "answerCount": 287
+    }
+  },
+  {
+    "id": 5,
+    "title": "김승섭의「아픔이 길이 되려면」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book5.jpg",
+    "questionText": "우리 사회의 불평등은 건강에 어떤 영향을 미치나요?",
+    "description": "차별과 불평등이 건강에 미치는 영향에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 31,
+      "memberCount": 142,
+      "questionCount": 7,
+      "answerCount": 198
+    }
+  },
+  {
+    "id": 6,
+    "title": "마이클 샌델의「공정하다는 착각」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book6.jpeg",
+    "questionText": "실력주의는 정말 공정한 시스템일까요?",
+    "description": "현대 사회의 능력주의가 가진 맹점과 대안에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 45,
+      "memberCount": 234,
+      "questionCount": 12,
+      "answerCount": 367
+    }
+  },
+  {
+    "id": 7,
+    "title": "이미예의「달러구트 꿈 백화점」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book7.jpg",
+    "questionText": "당신이 꿈꾸는 삶의 가치는 무엇인가요?",
+    "description": "꿈이라는 매개체를 통해 우리의 삶과 가치관에 대해 이야기해보세요.",
+    "meta": {
+      "soulLinkCount": 35,
+      "memberCount": 167,
+      "questionCount": 6,
+      "answerCount": 189
+    }
+  },
+  {
+    "id": 8,
+    "title": "알베르 카뮈의「페스트」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book1.jpeg",
+    "questionText": "재난 속에서 인간성은 어떻게 변화하는가?",
+    "description": "극한 상황에서 드러나는 인간의 본질에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 62,
+      "memberCount": 289,
+      "questionCount": 15,
+      "answerCount": 423
+    }
+  },
+  {
+    "id": 9,
+    "title": "유발 하라리의「사피엔스」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book2.jpg",
+    "questionText": "인류의 미래는 어떤 모습일까요?",
+    "description": "과학기술의 발전이 인류의 본질을 어떻게 변화시킬지 논의해보세요.",
+    "meta": {
+      "soulLinkCount": 58,
+      "memberCount": 312,
+      "questionCount": 14,
+      "answerCount": 467
+    }
+  },
+  {
+    "id": 10,
+    "title": "정유정의「종의 기원」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book3.jpeg",
+    "questionText": "악은 타고나는 것일까, 만들어지는 것일까?",
+    "description": "인간의 선악과 그 기원에 대해 깊이 있게 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 41,
+      "memberCount": 187,
+      "questionCount": 9,
+      "answerCount": 278
+    }
+  },
+  {
+    "id": 11,
+    "title": "파울로 코엘료의「연금술사」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book4.jpeg",
+    "questionText": "당신만의 '개인의 전설'은 무엇인가요?",
+    "description": "자아실현과 운명의 의미에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 49,
+      "memberCount": 245,
+      "questionCount": 10,
+      "answerCount": 356
+    }
+  },
+  {
+    "id": 12,
+    "title": "오은의「나의 첫 젠더 수업」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book5.jpg",
+    "questionText": "우리 사회에서 성평등은 어떻게 실현될 수 있을까요?",
+    "description": "일상 속 성차별과 그 해결방안에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 37,
+      "memberCount": 156,
+      "questionCount": 8,
+      "answerCount": 234
+    }
+  },
+  {
+    "id": 13,
+    "title": "김영하의「살인자의 기억법」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book6.jpeg",
+    "questionText": "기억은 우리의 정체성을 어떻게 형성하나요?",
+    "description": "기억과 자아의 관계에 대해 깊이 있게 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 34,
+      "memberCount": 178,
+      "questionCount": 7,
+      "answerCount": 245
+    }
+  },
+  {
+    "id": 14,
+    "title": "최인철의「프레임」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book7.jpg",
+    "questionText": "우리의 생각은 얼마나 자유로운가?",
+    "description": "인지적 편향과 그것이 삶에 미치는 영향에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 29,
+      "memberCount": 134,
+      "questionCount": 6,
+      "answerCount": 187
+    }
+  },
+  {
+    "id": 15,
+    "title": "정재승의「과학콘서트」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book1.jpeg",
+    "questionText": "과학은 어떻게 우리의 일상을 바꾸고 있나요?",
+    "description": "현대 과학이 우리 삶에 미치는 영향에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 33,
+      "memberCount": 167,
+      "questionCount": 8,
+      "answerCount": 223
+    }
+  },
+  {
+    "id": 16,
+    "title": "장강명의「당선, 합격, 계급」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book2.jpg",
+    "questionText": "한국 사회에서 계급은 어떻게 재생산되는가?",
+    "description": "교육과 계급 이동성에 대한 생각을 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 39,
+      "memberCount": 189,
+      "questionCount": 9,
+      "answerCount": 267
+    }
+  },
+  {
+    "id": 17,
+    "title": "김초엽의「우리가 빛의 속도로 갈 수 없다면」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book3.jpeg",
+    "questionText": "과학기술의 발전은 인간의 한계를 극복할 수 있을까?",
+    "description": "인간의 한계와 가능성에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 47,
+      "memberCount": 234,
+      "questionCount": 11,
+      "answerCount": 345
+    }
+  },
+  {
+    "id": 18,
+    "title": "정혜신의「당신이 옳다」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book4.jpeg",
+    "questionText": "트라우마는 어떻게 치유될 수 있을까?",
+    "description": "상처와 치유의 과정에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 36,
+      "memberCount": 167,
+      "questionCount": 7,
+      "answerCount": 234
+    }
+  },
+  {
+    "id": 19,
+    "title": "최재천의「생명이 있는 것은 다 아름답다」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book5.jpg",
+    "questionText": "생태계 위기 시대, 우리는 무엇을 할 수 있을까?",
+    "description": "환경 위기와 우리의 역할에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 32,
+      "memberCount": 156,
+      "questionCount": 8,
+      "answerCount": 198
+    }
+  },
+  {
+    "id": 20,
+    "title": "김훈의「칼의 노래」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book6.jpeg",
+    "questionText": "전쟁 속에서 인간은 무엇을 지키려 하는가?",
+    "description": "이순신의 삶을 통해 본 리더십과 희생에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 43,
+      "memberCount": 212,
+      "questionCount": 10,
+      "answerCount": 312
+    }
+  },
+  {
+    "id": 21,
+    "title": "황석영의「해질 무렵」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book7.jpg",
+    "questionText": "역사는 개인의 삶을 어떻게 바꾸는가?",
+    "description": "시대적 격변기 속 개인의 운명에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 28,
+      "memberCount": 145,
+      "questionCount": 6,
+      "answerCount": 178
+    }
+  },
+  {
+    "id": 22,
+    "title": "조남주의「82년생 김지영」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book1.jpeg",
+    "questionText": "일상적 차별은 어떻게 극복될 수 있는가?",
+    "description": "성차별의 일상성과 그 극복 방안에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 54,
+      "memberCount": 267,
+      "questionCount": 12,
+      "answerCount": 389
+    }
+  },
+  {
+    "id": 23,
+    "title": "김연수의「일곱 해의 마지막」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book2.jpg",
+    "questionText": "사랑은 시간을 어떻게 변화시키는가?",
+    "description": "시간과 기억, 그리고 사랑의 의미에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 31,
+      "memberCount": 156,
+      "questionCount": 7,
+      "answerCount": 223
+    }
+  },
+  {
+    "id": 24,
+    "title": "정세랑의「피프티 피플」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book3.jpeg",
+    "questionText": "타인의 삶은 우리에게 어떤 의미인가?",
+    "description": "다양한 삶의 이야기가 주는 통찰에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 35,
+      "memberCount": 178,
+      "questionCount": 8,
+      "answerCount": 245
+    }
+  },
+  {
+    "id": 25,
+    "title": "박상영의「대도시의 사랑법」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book4.jpeg",
+    "questionText": "현대 도시에서 진정한 사랑은 가능한가?",
+    "description": "도시적 삶과 사랑의 가능성에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 33,
+      "memberCount": 167,
+      "questionCount": 7,
+      "answerCount": 234
+    }
+  },
+  {
+    "id": 26,
+    "title": "은희경의「빛의 과거」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book5.jpg",
+    "questionText": "기억은 얼마나 신뢰할 수 있는가?",
+    "description": "개인과 집단의 기억에 대해 깊이 있게 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 29,
+      "memberCount": 145,
+      "questionCount": 6,
+      "answerCount": 189
+    }
+  },
+  {
+    "id": 27,
+    "title": "김봉곤의「아몬드」",
+    "popularity": "high",
+    "imageUrl": "/dummy/books/book6.jpeg",
+    "questionText": "감정은 우리를 어떻게 인간답게 만드는가?",
+    "description": "공감 능력과 인간성에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 41,
+      "memberCount": 198,
+      "questionCount": 9,
+      "answerCount": 289
+    }
+  },
+  {
+    "id": 28,
+    "title": "천명관의「고래」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book7.jpg",
+    "questionText": "가난은 인간의 존엄성을 어떻게 위협하는가?",
+    "description": "경제적 불평등과 인간의 가치에 대해 토론해보세요.",
+    "meta": {
+      "soulLinkCount": 34,
+      "memberCount": 167,
+      "questionCount": 7,
+      "answerCount": 223
+    }
+  },
+  {
+    "id": 29,
+    "title": "정지아의「달려라 아비」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book1.jpeg",
+    "questionText": "가족의 의미는 어떻게 변화하고 있는가?",
+    "description": "현대 사회에서 가족의 의미에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 27,
+      "memberCount": 134,
+      "questionCount": 6,
+      "answerCount": 178
+    }
+  },
+  {
+    "id": 30,
+    "title": "황정은의「디디의 우산」",
+    "popularity": "medium",
+    "imageUrl": "/dummy/books/book2.jpg",
+    "questionText": "일상의 기적은 어떻게 일어나는가?",
+    "description": "평범한 삶 속 특별한 순간들에 대해 이야기를 나눠보세요.",
+    "meta": {
+      "soulLinkCount": 30,
+      "memberCount": 156,
+      "questionCount": 7,
+      "answerCount": 212
+    }
+  }
+]

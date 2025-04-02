@@ -1,583 +1,406 @@
-/*******************************************************************************
- * app/page.tsx - Moonlight Project Masonry-like Card Layout
- *
- * Implements a horizontal, row-based layout with cards of fixed, distinct heights
- * and variable widths based on Flexbox (flex-basis + grow/shrink).
- * Uses predefined responsive patterns to change layout at breakpoints.
- * Aims for a visual Masonry effect by careful manual pattern design.
- *
- * Requirements Summary:
- * - Fixed Heights: L=300px, M=200px, S=133px
- * - Width: Base Width (L=900, M=600, S=400) + Equal distribution of remaining space 'n' per row.
- *          Implemented using `flex-basis` for base width and `flex-grow: 1`, `flex-shrink: 1`.
- * - Responsive: Layout patterns change at defined breakpoints (sm, md, lg).
- * - Visual Masonry: Patterns are manually designed to minimize vertical gaps.
- * - Content: L/M cards have images, S cards do not. Specific content structure.
- ******************************************************************************/
-"use client"; // Necessary for using React client-side hooks
+"use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { debounce } from "lodash"; // For debouncing resize events
-import Image from "next/image"; // For optimized image handling
+import React, { useState, useEffect, useCallback, useMemo, memo } from "react";
+// lodash/debounce를 직접 임포트하여 번들 사이즈 최적화
+import debounce from "lodash/debounce";
+import Image from "next/image";
 import {
   ChatBubbleLeftRightIcon,
   UserGroupIcon,
   QuestionMarkCircleIcon,
   LinkIcon,
-} from "@heroicons/react/24/outline"; // Example icons
+} from "@heroicons/react/24/outline";
+import contents from "@/app/dummy/contents.json";
 
-// --- Type Definitions ---
+/* =======================
+   타입 및 상수 정의
+========================= */
 
-type CardSize = "L" | "M" | "S";
+// 가독성을 위해 타입을 명시적으로 export (필수는 아님)
+export type CardSize = "L" | "M" | "S";
 
-interface MetaData {
+export interface MetaData {
   soulLinkCount: number;
   memberCount: number;
   questionCount: number;
   answerCount: number;
 }
 
-interface CardData {
+export interface CardData {
   id: number;
-  title: string; // Top small title (e.g., Author/Source)
-  popularity: "high" | "medium" | "low"; // Used for mapping to L/M/S initially
-  imageUrl?: string; // Optional image URL, mainly for L and M cards
-  questionText: string; // Main question/headline text
-  description: string; // Description text below the question
-  meta: MetaData; // Metadata object
+  title: string;
+  popularity: "high" | "medium" | "low";
+  imageUrl?: string;
+  questionText: string;
+  description: string;
+  meta: MetaData;
 }
 
-// Defines the structure of an item in the layout pattern definition
-interface LayoutDefinitionItem {
+export interface LayoutDefinitionItem {
   size: CardSize;
-  contentId: number; // ID to map to CardData
+  contentId: number;
 }
 
-// Defines the structure of an item ready for rendering (includes actual data)
-interface LayoutItem extends LayoutDefinitionItem {
+export interface LayoutItem extends LayoutDefinitionItem {
   data: CardData;
 }
 
-// --- Card Specifications ---
-// Defines fixed height and base width (for flex-basis) for each card size.
-// Uses Tailwind arbitrary values for precise pixel heights.
+// 카드 스펙: 객체의 키를 CardSize 타입으로 명시
 const CARD_SPECS: Record<CardSize, { height: string; baseWidth: string }> = {
-  L: { height: "h-[300px]", baseWidth: "basis-[900px]" }, // 300px height, 900px base width
-  M: { height: "h-[200px]", baseWidth: "basis-[600px]" }, // 200px height, 600px base width
-  S: { height: "h-[133px]", baseWidth: "basis-[400px]" }, // *** UPDATED: 133px height, 400px base width ***
+  L: { height: "h-[300px]", baseWidth: "basis-[900px]" }, // L만 고정 높이
+  M: { height: "min-h-[180px]", baseWidth: "basis-[600px]" }, // M/S는 최소 높이 추가 가능성 고려
+  S: { height: "min-h-[120px]", baseWidth: "basis-[400px]" }, // 최소 높이 설정 (예시)
 };
 
-// --- Sample Content Data ---
-// Ensure this array contains data for all `contentId`s used in `layoutPatterns`.
-const allContent: CardData[] = [
-  // Use placeholder images or actual image paths in your /public folder
-  {
-    id: 1,
-    title: "김호연의「불편한 편의점」",
-    popularity: "high",
-    imageUrl: "/placeholder-images/uncomfortable-convenience-store.jpg",
-    questionText: "평범한 일상 속에 숨겨진 특별함은 무엇일까?",
-    description:
-      "일상 속 작은 순간들이 가진 특별한 의미에 대해 이야기를 나눠보세요.",
-    meta: {
-      soulLinkCount: 42,
-      memberCount: 198,
-      questionCount: 8,
-      answerCount: 245,
-    },
-  },
-  {
-    id: 2,
-    title: "유발 하라리의「사피엔스」",
-    popularity: "medium",
-    imageUrl: "/placeholder-images/sapiens.jpg",
-    questionText: "인류는 어떻게 지구의 지배자가 되었나?",
-    description:
-      "수렵채집인에서 시작하여 현재에 이르기까지 인류 역사의 거대한 흐름을 탐험합니다.",
-    meta: {
-      soulLinkCount: 150,
-      memberCount: 255,
-      questionCount: 15,
-      answerCount: 310,
-    },
-  },
-  {
-    id: 3,
-    title: "나의 작은 아이디어 노트",
-    popularity: "low",
-    questionText: "세상을 바꿀 다음 아이디어는?",
-    description:
-      "번뜩이는 영감과 작은 생각의 조각들을 기록하고 발전시키는 공간입니다.",
-    meta: {
-      soulLinkCount: 5,
-      memberCount: 10,
-      questionCount: 2,
-      answerCount: 8,
-    },
-  },
-  {
-    id: 4,
-    title: "칼 세이건의「코스모스」",
-    popularity: "medium",
-    imageUrl: "/placeholder-images/cosmos.jpg",
-    questionText: "우리는 광활한 우주 속 어떤 존재인가?",
-    description:
-      "과학적 탐구를 통해 우주의 신비와 인간 존재의 의미를 성찰합니다.",
-    meta: {
-      soulLinkCount: 95,
-      memberCount: 180,
-      questionCount: 9,
-      answerCount: 155,
-    },
-  },
-  {
-    id: 5,
-    title: "재레드 다이아몬드의「총, 균, 쇠」",
-    popularity: "high",
-    imageUrl: "/placeholder-images/guns-germs-steel.jpg",
-    questionText: "문명의 불평등은 어디에서 시작되었을까?",
-    description:
-      "지리, 환경, 기술적 요인이 인류 문명의 발전에 미친 영향을 분석합니다.",
-    meta: {
-      soulLinkCount: 180,
-      memberCount: 310,
-      questionCount: 22,
-      answerCount: 450,
-    },
-  },
-  {
-    id: 6,
-    title: "오늘의 감사 일기",
-    popularity: "low",
-    questionText: "오늘 하루 감사했던 일 세 가지는?",
-    description: "소소하지만 확실한 행복을 찾아 기록하는 습관을 들여보세요.",
-    meta: {
-      soulLinkCount: 25,
-      memberCount: 50,
-      questionCount: 3,
-      answerCount: 75,
-    },
-  },
-  // Add more sample data matching IDs used in layoutPatterns below
-  {
-    id: 7,
-    title: "샘플 L 데이터 7",
-    popularity: "high",
-    imageUrl: "https://via.placeholder.com/900x300/FF6347/FFFFFF?text=L+Card+7",
-    questionText: "다른 L 카드 질문?",
-    description: "L 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 100,
-      memberCount: 200,
-      questionCount: 10,
-      answerCount: 50,
-    },
-  },
-  {
-    id: 8,
-    title: "샘플 S 데이터 8",
-    popularity: "low",
-    questionText: "다른 S 카드 질문?",
-    description: "S 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 10,
-      memberCount: 20,
-      questionCount: 1,
-      answerCount: 5,
-    },
-  },
-  {
-    id: 9,
-    title: "샘플 M 데이터 9",
-    popularity: "medium",
-    imageUrl: "https://via.placeholder.com/600x200/4682B4/FFFFFF?text=M+Card+9",
-    questionText: "다른 M 카드 질문?",
-    description: "M 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 50,
-      memberCount: 100,
-      questionCount: 5,
-      answerCount: 25,
-    },
-  },
-  {
-    id: 10,
-    title: "샘플 S 데이터 10",
-    popularity: "low",
-    questionText: "또 다른 S 카드 질문?",
-    description: "S 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 12,
-      memberCount: 22,
-      questionCount: 2,
-      answerCount: 7,
-    },
-  },
-  {
-    id: 11,
-    title: "샘플 L 데이터 11",
-    popularity: "high",
-    imageUrl:
-      "https://via.placeholder.com/900x300/32CD32/FFFFFF?text=L+Card+11",
-    questionText: "매우 긴 L 질문?",
-    description: "L 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 110,
-      memberCount: 210,
-      questionCount: 11,
-      answerCount: 55,
-    },
-  },
-  {
-    id: 12,
-    title: "샘플 M 데이터 12",
-    popularity: "medium",
-    imageUrl:
-      "https://via.placeholder.com/600x200/FFD700/000000?text=M+Card+12",
-    questionText: "매우 긴 M 질문?",
-    description: "M 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 60,
-      memberCount: 110,
-      questionCount: 6,
-      answerCount: 30,
-    },
-  },
-  {
-    id: 13,
-    title: "샘플 S 데이터 13",
-    popularity: "low",
-    questionText: "매우 긴 S 질문?",
-    description: "S 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 15,
-      memberCount: 25,
-      questionCount: 3,
-      answerCount: 9,
-    },
-  },
-  {
-    id: 14,
-    title: "샘플 S 데이터 14",
-    popularity: "low",
-    questionText: "마지막 S 질문?",
-    description: "마지막 S 카드 설명입니다.",
-    meta: {
-      soulLinkCount: 18,
-      memberCount: 28,
-      questionCount: 4,
-      answerCount: 11,
-    },
-  },
-];
+// 샘플 콘텐츠 데이터 (타입 단언 명확화)
+const allContent: CardData[] = contents as CardData[];
 
-// --- !!! Responsive Layout Patterns (Manual Masonry Design - CRITICAL!) !!! ---
-// Manually design card combinations for each breakpoint.
-// GOAL: Minimize vertical gaps visually, considering fixed heights (L:300, M:200, S:133).
-//       Utilize height relationships (e.g., L ≈ M+S, M ≈ S+~half S) for better packing.
-// CONSIDER: Base width sums per row vs. breakpoint width ranges. Avoid combinations
-//           that cause excessive shrinking if cards shouldn't go below base width.
-// NOTE: The patterns below are *examples* and **MUST BE REDESIGNED** based on the
-//       updated S card specs (133px height, 400px baseWidth) and visual goals.
+// 반응형 레이아웃 패턴 정의 (변경 없음)
 const layoutPatterns: Record<string, LayoutDefinitionItem[][]> = {
   default: [
-    // ~639px: Vertical stack is safest
     [{ size: "L", contentId: 1 }],
     [{ size: "M", contentId: 2 }],
-    [{ size: "S", contentId: 3 }], // H: 133px
+    [{ size: "S", contentId: 3 }],
     [{ size: "M", contentId: 4 }],
     [{ size: "L", contentId: 5 }],
-    [{ size: "S", contentId: 6 }], // H: 133px
+    [{ size: "S", contentId: 6 }],
   ],
   sm: [
-    // 640px–767px: Short rows. Check base widths.
-    // M+S = 600+400 = 1000px. Will likely shrink in this range. Ok?
-    [{ size: "L", contentId: 1 }], // Base: 900px -> Will shrink
+    [{ size: "L", contentId: 1 }],
     [
       { size: "M", contentId: 2 },
       { size: "S", contentId: 3 },
-    ], // Base: 1000px -> Will shrink
+    ],
     [
       { size: "S", contentId: 6 },
       { size: "S", contentId: 8 },
-    ], // Base: 400+400=800px -> Will shrink
-    [{ size: "M", contentId: 4 }], // Base: 600px -> Ok
-    // *** Redesign patterns carefully for sm breakpoint ***
+    ],
+    [{ size: "M", contentId: 4 }],
   ],
   md: [
-    // 768–1023px: Medium rows. Check base widths.
-    // L+S = 900+400 = 1300px -> Will shrink. Ok?
-    // M+M = 600+600 = 1200px -> Will shrink. Ok?
-    [{ size: "L", contentId: 1 }], // Base: 900px -> Ok
+    [{ size: "L", contentId: 1 }],
     [
       { size: "M", contentId: 2 },
       { size: "S", contentId: 3 },
-    ], // Base: 1000px -> Ok
+    ],
     [
       { size: "M", contentId: 4 },
       { size: "S", contentId: 6 },
-    ], // Base: 1000px -> Ok
+    ],
     [
       { size: "L", contentId: 5 },
       { size: "S", contentId: 8 },
-    ], // Base: 1300px -> Shrink likely
-    // *** Redesign patterns carefully for md breakpoint ***
+    ],
   ],
   lg: [
-    // 1024px 이상: Wide rows. Base widths less likely to be an issue. Focus on height packing.
-    // L(300), M(200), S(133). Try to use L ≈ M+S, M ≈ S+S(approx) etc.
     [
       { size: "L", contentId: 1 },
       { size: "M", contentId: 2 },
       { size: "S", contentId: 3 },
-    ], // H: 300, 200, 133. Base: 1900px
+    ],
     [
       { size: "M", contentId: 4 },
       { size: "S", contentId: 6 },
       { size: "L", contentId: 5 },
-    ], // H: 200, 133, 300. Base: 1900px
+    ],
     [
       { size: "S", contentId: 8 },
       { size: "S", contentId: 10 },
       { size: "M", contentId: 9 },
       { size: "S", contentId: 13 },
-    ], // H: 133*3 + 200. Base: 400*3+600 = 1800px
+    ],
     [
       { size: "L", contentId: 7 },
       { size: "L", contentId: 11 },
-    ], // H: 300, 300. Base: 1800px
-    // *** Add more diverse patterns for lg, focusing on visual packing ***
+    ],
   ],
 };
 
-// --- Tailwind Breakpoint Configuration ---
-// Matches default Tailwind breakpoints. Adjust if your config is different.
+// Tailwind 기본 브레이크포인트 (변경 없음)
 const breakpoints = { sm: 640, md: 768, lg: 1024, xl: 1280, "2xl": 1536 };
 
-// --- Helper Function: Get Layout Pattern for Current Width ---
+// 최적화: 콘텐츠 ID를 키로 하는 Map 생성 (O(1) 조회)
+const contentMap = new Map<number, CardData>(
+  allContent.map((content) => [content.id, content])
+);
+
+/* =======================
+   헬퍼 함수들
+========================= */
+
 const getLayoutPatternForWidth = (width: number): LayoutDefinitionItem[][] => {
+  // 변경 없음
   if (width >= breakpoints.lg) return layoutPatterns.lg;
   if (width >= breakpoints.md) return layoutPatterns.md;
   if (width >= breakpoints.sm) return layoutPatterns.sm;
   return layoutPatterns.default;
 };
 
-// --- Helper Function: Get Card Container CSS Classes ---
-// Applies flex-basis (base width), grow, shrink, and fixed height.
+// 최적화: 기본 스타일 문자열을 상수로 분리하여 가독성 향상
+const BASE_CARD_STYLE =
+  "bg-gradient-to-br from-[#111] to-[#181818] overflow-hidden rounded-lg shadow-lg border border-[#6dd1e4]/10 transition-all duration-150 ease-in-out hover:border-[#6dd1e4]/30";
+
 const getCardContainerClasses = (size: CardSize): string => {
   const spec = CARD_SPECS[size];
-  // Flex properties: Allow growing (1), shrinking (1), starting from base width
-  const flexClasses = `grow shrink ${spec.baseWidth}`; // e.g., grow shrink basis-[400px]
-  // Fixed height class based on card size
-  const heightClass = spec.height; // e.g., h-[133px]
-  // Base styling for the card container
-  const baseStyle =
-    "bg-white dark:bg-neutral-900 overflow-hidden rounded-lg shadow-md dark:border dark:border-neutral-700 transition-width duration-150 ease-in-out"; // Added transition
-
-  return `${flexClasses} ${heightClass} ${baseStyle}`;
+  // M, S 카드에 최소 높이 추가 또는 기존 min-h-fit 유지 가능
+  const heightClass = spec.height || "min-h-fit"; // M, S에 고정 높이 없으면 최소 높이 유지
+  const flexClasses = `grow shrink ${spec.baseWidth}`;
+  return `${flexClasses} ${heightClass} ${BASE_CARD_STYLE}`;
 };
 
-// --- Card Internal Content Component ---
-// Renders the image (for L/M), text, and metadata within a card.
-const CardContent: React.FC<{ item: LayoutItem }> = ({ item }) => {
+// 최적화: fallback 데이터 생성을 함수 밖으로 빼거나 useMemo로 감싸 불필요한 재생성 방지 (여기선 간단하게 유지)
+const getFallbackData = (contentId: number): CardData => ({
+  id: -1, // 명확한 식별자
+  title: `콘텐츠 ID ${contentId} 로드 실패`,
+  popularity: "low",
+  imageUrl: undefined, // imageUrl이 없을 수 있음을 명시
+  questionText: "데이터를 찾을 수 없습니다.",
+  description: "요청한 콘텐츠가 존재하지 않거나 로드 중 오류가 발생했습니다.",
+  meta: { soulLinkCount: 0, memberCount: 0, questionCount: 0, answerCount: 0 },
+});
+
+/* =======================
+   커스텀 훅: useResponsiveLayout
+========================= */
+
+function useResponsiveLayout(): LayoutItem[][] {
+  // populateLayout 함수를 useState 이전에 정의
+  const populateLayout = useCallback(
+    (pattern: LayoutDefinitionItem[][]): LayoutItem[][] => {
+      return pattern
+        .map((row) =>
+          row.map((itemDef) => {
+            const content = contentMap.get(itemDef.contentId);
+            return content
+              ? { ...itemDef, data: content }
+              : { ...itemDef, data: getFallbackData(itemDef.contentId) };
+          })
+        )
+        .filter((row) => row.length > 0);
+    },
+    []
+  );
+
+  const [layout, setLayout] = useState<LayoutItem[][]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+    const initialPattern = getLayoutPatternForWidth(window.innerWidth);
+    return populateLayout(initialPattern);
+  });
+
+  const updateLayout = useCallback(() => {
+    const currentPattern = getLayoutPatternForWidth(window.innerWidth);
+    setLayout(populateLayout(currentPattern));
+  }, [populateLayout]); // populateLayout 함수 자체를 의존성으로 추가
+
+  // 최적화: debounce 딜레이 조절 가능 (150ms는 적절해 보임)
+  const debouncedUpdate = useMemo(
+    () => debounce(updateLayout, 150),
+    [updateLayout]
+  );
+
+  useEffect(() => {
+    // 초기 마운트 시 클라이언트 사이드에서 레이아웃 재계산 (SSR 결과와 다를 수 있음)
+    updateLayout();
+
+    window.addEventListener("resize", debouncedUpdate);
+    return () => {
+      debouncedUpdate.cancel(); // 컴포넌트 언마운트 시 debounce 취소
+      window.removeEventListener("resize", debouncedUpdate);
+    };
+  }, [updateLayout, debouncedUpdate]); // updateLayout은 useCallback으로 안정화됨
+
+  return layout;
+}
+
+/* =======================
+   컴포넌트: CardContent
+   최적화: React.memo 적용 고려 (props가 복잡하지 않아 효과는 미미할 수 있음)
+========================= */
+
+interface CardContentProps {
+  item: LayoutItem; // data 객체는 동일 참조일 가능성이 높음
+}
+
+// React.memo를 사용하면 item prop이 (얕은 비교로) 동일할 경우 리렌더링 방지
+const CardContent: React.FC<CardContentProps> = memo(({ item }) => {
   const { size, data } = item;
   const { title, imageUrl, questionText, description, meta } = data;
 
-  // Dynamic styles based on card size
+  // 데이터 로딩 실패 시 표시 개선
+  if (data.id === -1) {
+    return (
+      <div className="flex items-center justify-center h-full w-full p-4">
+        <p className="text-white/70 text-center">{data.title}</p>
+      </div>
+    );
+  }
+
   const questionSizeClass =
     size === "L"
       ? "text-xl sm:text-2xl"
       : size === "M"
       ? "text-lg sm:text-xl"
       : "text-base sm:text-lg";
+
   const imageContainerWidthClass =
-    size === "L" ? "w-2/5 sm:w-1/3" : size === "M" ? "w-1/3 sm:w-1/4" : ""; // Image width proportion
-  const imageAspectRatioClass = "aspect-[2/3]"; // Standard book cover ratio
+    size === "L" ? "w-[200px]" : size === "M" ? "w-[133px]" : "w-[100px]";
+
+  // 이미지 sizes 속성 설명:
+  // 브라우저는 이 정보를 사용하여 다양한 화면 크기에서 어떤 해상도의 이미지를 로드할지 결정합니다.
+  // 예: "(max-width: 640px) 100px" -> 화면 너비 640px 이하에서는 이미지 렌더링 너비가 100px임을 의미.
+  // 이 값은 실제 레이아웃과 카드 크기에 따라 더 정확하게 설정할수록 좋습니다.
+  const imageSizes =
+    size === "L"
+      ? "(max-width: 640px) 200px, 200px" // 예시: sm 이하 200, 그 이상 200
+      : size === "M"
+      ? "(max-width: 640px) 133px, 133px" // 예시: sm 이하 133, 그 이상 133
+      : "(max-width: 640px) 100px, 100px"; // S 카드 (이미지 표시 안 함)
 
   return (
-    // Main flex container: row for L/M, column for S
     <div
-      className={`flex h-full w-full ${size !== "S" ? "flex-row" : "flex-col"}`}
+      className={`flex h-full w-full ${
+        size !== "S" ? "flex-row" : "flex-row items-start" // S 카드는 시작 정렬 유지
+      }`}
     >
-      {/* Image Section (Only for L and M cards with an imageUrl) */}
+      {/* S 사이즈에서는 이미지 표시 안 함 (기존 로직 유지) */}
       {size !== "S" && imageUrl && (
         <div
-          className={`relative ${imageContainerWidthClass} flex-shrink-0 ${imageAspectRatioClass} overflow-hidden rounded-l-lg`}
+          className={`relative ${imageContainerWidthClass} flex-shrink-0 h-full overflow-hidden rounded-l-lg`}
         >
-          <Image
-            src={imageUrl}
-            alt={`${title} cover`}
-            layout="fill" // Fill the container
-            objectFit="cover" // Cover the area, maintaining aspect ratio (may crop)
-            priority={size === "L"} // Prioritize loading large images
-            sizes="(max-width: 640px) 40vw, (max-width: 1024px) 33vw, 25vw" // Responsive image size hints
-          />
+          {/* Image 컴포넌트 최적화: priority, sizes 속성 활용 */}
+          <div className="relative w-full h-full">
+            <Image
+              src={imageUrl}
+              alt={`${title} 표지 이미지`} // alt 텍스트 개선
+              fill
+              className="object-contain" // 이미지가 잘리지 않도록 contain 사용 (cover도 가능)
+              priority={size === "L"} // L 사이즈 카드는 중요도가 높다고 가정
+              sizes={imageSizes} // 최적화된 이미지 로드를 위해 sizes 명시
+            />
+          </div>
         </div>
       )}
-      {/* Text & Metadata Section */}
       <div
         className={`flex flex-1 flex-col p-3 sm:p-4 ${
-          size === "S" ? "justify-between" : ""
+          size === "S" ? "justify-start" : "justify-between" // S는 위에서부터 채우기, M/L은 공간 분배
         } space-y-1 sm:space-y-2 overflow-hidden`}
       >
-        {/* Top Text Group */}
-        <div>
-          <p className="text-xs sm:text-sm font-medium text-blue-600 dark:text-blue-400 mb-1">
+        {/* 상단 텍스트 컨텐츠 */}
+        <div className="flex-grow">
+          {" "}
+          {/* 텍스트 영역이 남은 공간 차지 */}
+          <p className="text-xs sm:text-sm font-medium text-[#6dd1e4] mb-1 truncate">
             {title}
           </p>
           <h2
-            className={`${questionSizeClass} font-bold text-neutral-800 dark:text-neutral-100 leading-tight mb-1 sm:mb-2 line-clamp-2`}
+            className={`${questionSizeClass} font-bold text-white/90 leading-tight mb-1 sm:mb-2 line-clamp-2`}
+            title={questionText} // 긴 텍스트 title 속성 추가
           >
             {questionText}
           </h2>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 sm:line-clamp-3">
+          {/* 설명은 카드 크기에 따라 line-clamp 조절 */}
+          <p
+            className={`text-sm text-white/70 ${
+              size === "L"
+                ? "line-clamp-3 sm:line-clamp-4"
+                : size === "M"
+                ? "line-clamp-2 sm:line-clamp-3"
+                : "line-clamp-2" // S
+            }`}
+            title={description} // 긴 텍스트 title 속성 추가
+          >
             {description}
           </p>
         </div>
-        {/* Bottom Metadata Group (sticks to bottom) */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-2 border-t border-neutral-200 dark:border-neutral-700 mt-auto">
-          <span className="flex items-center text-xs text-neutral-500 dark:text-neutral-400">
-            <LinkIcon className="w-3.5 h-3.5 mr-1" /> 소울링크{" "}
-            {meta.soulLinkCount}쌍
+
+        {/* 하단 메타 정보 */}
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-2 border-t border-white/10 mt-auto flex-shrink-0">
+          {/* flex-shrink-0 추가하여 메타 정보가 줄어들지 않도록 */}
+          <span className="flex items-center text-xs text-white/60">
+            <LinkIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0" /> 소울링크{" "}
+            {meta.soulLinkCount.toLocaleString()}쌍
           </span>
-          <span className="flex items-center text-xs text-neutral-500 dark:text-neutral-400">
-            <UserGroupIcon className="w-3.5 h-3.5 mr-1" /> 멤버{" "}
-            {meta.memberCount}명
+          <span className="flex items-center text-xs text-white/60">
+            <UserGroupIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0" /> 멤버{" "}
+            {meta.memberCount.toLocaleString()}명
           </span>
-          <span className="flex items-center text-xs text-neutral-500 dark:text-neutral-400">
-            <QuestionMarkCircleIcon className="w-3.5 h-3.5 mr-1" /> 질문{" "}
-            {meta.questionCount}개
+          <span className="flex items-center text-xs text-white/60">
+            <QuestionMarkCircleIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0" />{" "}
+            질문 {meta.questionCount.toLocaleString()}개
           </span>
-          <span className="flex items-center text-xs text-neutral-500 dark:text-neutral-400">
-            <ChatBubbleLeftRightIcon className="w-3.5 h-3.5 mr-1" /> 답변{" "}
-            {meta.answerCount}개
+          <span className="flex items-center text-xs text-white/60">
+            <ChatBubbleLeftRightIcon className="w-3.5 h-3.5 mr-1 flex-shrink-0" />{" "}
+            답변 {meta.answerCount.toLocaleString()}개
           </span>
         </div>
       </div>
     </div>
   );
-};
+});
+CardContent.displayName = "CardContent"; // Memo 컴포넌트 디버깅 이름 설정
 
-// --- Main Page Component ---
+/* =======================
+   컴포넌트: Card
+   최적화: React.memo 적용
+========================= */
+
+interface CardProps {
+  item: LayoutItem;
+}
+
+// React.memo 적용: item prop이 (얕은 비교로) 동일하면 리렌더링 방지
+const Card: React.FC<CardProps> = memo(({ item }) => (
+  <div className={getCardContainerClasses(item.size)}>
+    <CardContent item={item} />
+  </div>
+));
+Card.displayName = "Card"; // Memo 컴포넌트 디버깅 이름 설정
+
+/* =======================
+   메인 페이지 컴포넌트: HomePage
+========================= */
+
 export default function HomePage() {
-  // State to hold the currently active layout pattern based on screen width
-  const [currentLayout, setCurrentLayout] = useState<LayoutItem[][]>([]);
+  const currentLayout = useResponsiveLayout();
 
-  // Function to calculate and set the current layout based on window width
-  const handleResize = useCallback(() => {
-    const pattern = getLayoutPatternForWidth(window.innerWidth);
-    // Map the chosen pattern definition to actual data for rendering
-    const populatedLayout: LayoutItem[][] = pattern
-      .map(
-        (rowPattern) =>
-          rowPattern
-            .map((itemDef) => {
-              const content = allContent.find(
-                (c) => c.id === itemDef.contentId
-              );
-              // Provide fallback data if content is not found to prevent errors
-              const fallbackData: CardData = {
-                id: -1,
-                title: `콘텐츠 ${itemDef.contentId} 없음`,
-                popularity: "low",
-                questionText: "데이터 로딩 실패",
-                description: "데이터를 불러올 수 없습니다.",
-                meta: {
-                  soulLinkCount: 0,
-                  memberCount: 0,
-                  questionCount: 0,
-                  answerCount: 0,
-                },
-              };
-              return { ...itemDef, data: content || fallbackData };
-            })
-            .filter((item) => item.data.id !== -1) // Filter out items with missing data
-      )
-      .filter((row) => row.length > 0); // Filter out any potentially empty rows
-    setCurrentLayout(populatedLayout);
-  }, []); // Empty dependency array means this function is created only once
-
-  // Debounced version of the resize handler to improve performance
-  const debouncedHandleResize = useMemo(
-    () => debounce(handleResize, 150),
-    [handleResize]
-  );
-
-  // Effect to set initial layout and add/remove resize listener
-  useEffect(() => {
-    handleResize(); // Set initial layout on mount
-    window.addEventListener("resize", debouncedHandleResize); // Add listener
-
-    // Cleanup function: remove listener and cancel debounce on unmount
-    return () => {
-      debouncedHandleResize.cancel();
-      window.removeEventListener("resize", debouncedHandleResize);
-    };
-  }, [handleResize, debouncedHandleResize]); // Dependencies are stable references
-
-  // Render the main page layout
   return (
-    <div className="w-full min-h-screen bg-gray-100 dark:bg-black p-1 sm:p-2">
-      {/* Vertical container for rows */}
+    <div className="w-full min-h-screen bg-black p-1 sm:p-2">
       <div className="flex flex-col gap-1 sm:gap-2">
-        {/* Map over the current layout rows */}
         {currentLayout.map((row, rowIndex) => (
-          // Each Row: horizontal flex, no wrap, align items top, gap between cards
+          // 행에도 고유 key 부여 (rowIndex는 안정적임)
           <div
-            key={rowIndex}
-            className="flex flex-row flex-nowrap items-start gap-1 sm:gap-2"
+            key={`row-${rowIndex}`}
+            className="flex flex-row flex-nowrap items-stretch gap-1 sm:gap-2" // items-stretch 추가하여 카드 높이 맞춤 시도
           >
-            {/* Map over cards within the row */}
             {row.map((item) => (
-              // Card Container: Applies flex sizing and fixed height
-              <div
-                key={item.data.id}
-                className={getCardContainerClasses(item.size)}
-              >
-                {/* Render the internal card content */}
-                <CardContent item={item} />
-              </div>
+              // 최적화: Memoized Card 컴포넌트 사용
+              // key는 contentId와 size 조합 또는 고유 ID 사용 고려 (data.id가 고유하다면 사용)
+              <Card
+                key={
+                  item.data.id !== -1
+                    ? item.data.id
+                    : `fallback-${item.contentId}`
+                }
+                item={item}
+              />
             ))}
           </div>
         ))}
-        {/* Message displayed if no content/layout is available */}
-        {currentLayout.length === 0 &&
-          allContent.length > 0 && ( // Show only if data exists but layout is empty (e.g., error state)
-            <p className="text-center text-neutral-500 dark:text-neutral-400 py-10">
-              레이아웃을 구성할 수 없습니다.
-            </p>
-          )}
-        {currentLayout.length === 0 &&
-          allContent.length === 0 && ( // Show if no data loaded
-            <p className="text-center text-neutral-500 dark:text-neutral-400 py-10">
-              표시할 콘텐츠가 없습니다.
-            </p>
-          )}
+        {/* 로딩 상태 또는 빈 상태 표시 개선 */}
+        {currentLayout.length === 0 && contentMap.size > 0 && (
+          <p className="text-center text-white/60 py-10">
+            현재 화면 크기에 맞는 레이아웃을 구성 중이거나 표시할 콘텐츠가
+            없습니다.
+          </p>
+        )}
+        {contentMap.size === 0 && (
+          <p className="text-center text-white/60 py-10">
+            표시할 콘텐츠 데이터가 없습니다.
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
-// --- Required Installations ---
-// npm install lodash @types/lodash
-// npm install @heroicons/react
-// npm install -D @tailwindcss/line-clamp
-
-// --- Required Tailwind Configuration (tailwind.config.js) ---
-// module.exports = {
-//   content: [
-//     "./app/**/*.{js,ts,jsx,tsx,mdx}",
-//     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
-//     "./components/**/*.{js,ts,jsx,tsx,mdx}",
-//     // Or if using `src` directory:
-//     // "./src/**/*.{js,ts,jsx,tsx,mdx}",
-//   ],
-//   theme: {
-//     extend: {},
-//   },
-//   plugins: [
-//     require('@tailwindcss/line-clamp'),
-//     // aspect-ratio plugin might be needed for Tailwind v2
-//     // require('@tailwindcss/aspect-ratio'),
-//   ],
-// }
