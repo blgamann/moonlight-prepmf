@@ -1,0 +1,79 @@
+[
+  {
+    "id": 1,
+    "title": "데미안",
+    "author": "헤르만 헤세",
+    "imageUrl": "/images/demian.jpg",
+    "prompt": "새는 알에서 나오려고 투쟁한다. 알은 세계이다.",
+    "description": "에밀 싱클레어라는 소년이 데미안이라는 신비로운 친구를 만나 자아를 찾아가는 과정을 그린 성장 소설입니다. 선과 악, 개인과 사회 사이에서 고뇌하며 진정한 자신을 발견하는 여정을 탐구합니다.",
+    "meta": {
+      "pages": 240,
+      "rating": 4.5,
+      "reviews": 1500,
+      "readers": 25000,
+      "soulLinkCount": 1200,
+      "questionCount": 50
+    }
+  },
+  {
+    "id": 2,
+    "title": "1984",
+    "author": "조지 오웰",
+    "imageUrl": "/images/1984.jpg",
+    "prompt": "빅 브라더가 당신을 지켜보고 있다.",
+    "description": "전체주의 사회의 감시와 통제를 비판적으로 그린 디스토피아 소설입니다. 개인의 자유와 사상이 억압받는 암울한 미래를 통해 현실 사회의 위험성을 경고합니다.",
+    "meta": {
+      "pages": 400,
+      "rating": 4.8,
+      "reviews": 2200,
+      "readers": 35000,
+      "answerCount": 800
+    }
+  },
+  {
+    "id": 3,
+    "title": "어린 왕자",
+    "author": "앙투안 드 생텍쥐페리",
+    "imageUrl": "/images/little_prince.jpg",
+    "prompt": "가장 중요한 것은 눈에 보이지 않아.",
+    "description": "사막에 불시착한 조종사가 다른 별에서 온 어린 왕자를 만나 순수함과 관계의 소중함을 깨닫는 이야기입니다. 어른들의 잃어버린 동심과 진정한 가치에 대해 질문을 던집니다.",
+    "meta": {
+      "pages": 120,
+      "rating": 4.7,
+      "reviews": 3000,
+      "readers": 50000,
+      "soulLinkCount": 5000
+    }
+  },
+
+  {
+    "id": 4,
+    "title": "이기적 유전자",
+    "author": "리처드 도킨스",
+    "imageUrl": "/images/selfish_gene.jpg",
+    "prompt": "우리는 생존 기계다.",
+    "description": "진화의 주체를 유전자로 보고, 생명체의 모든 행동을 유전자의 생존과 번식 전략으로 설명하는 혁신적인 과학 서적입니다. 인간과 생명의 본질에 대한 새로운 시각을 제공합니다.",
+    "meta": {
+      "pages": 520,
+      "rating": 4.4,
+      "reviews": 800,
+      "readers": 15000,
+      "questionCount": 120
+    }
+  },
+  {
+    "id": 5,
+    "title": "사피엔스",
+    "author": "유발 하라리",
+    "imageUrl": "/images/sapiens.jpg",
+    "prompt": "인지 혁명은 역사의 시작이었다.",
+    "description": "수렵 채집인이었던 호모 사피엔스가 어떻게 지구의 지배자가 되었는지, 인류 역사의 거대한 흐름을 통찰력 있게 분석합니다. 과거, 현재, 미래를 관통하는 질문들을 던집니다.",
+    "meta": {
+      "pages": 600,
+      "rating": 4.6,
+      "reviews": 1800,
+      "readers": 40000,
+      "memberCount": 150
+    }
+  }
+]
