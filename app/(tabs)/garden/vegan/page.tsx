@@ -302,20 +302,77 @@ const StarIcon = ({ filled }: { filled: boolean }) => (
 
 export default function VeganGardenPage() {
   const [activeTab, setActiveTab] = useState("questions");
-  // State to track the selected question
   const [selectedQuestion, setSelectedQuestion] =
     useState<SelectedQuestion | null>(null);
+  // State for answering mode
+  const [isAnswering, setIsAnswering] = useState(false);
+  const [currentAnswer, setCurrentAnswer] = useState(""); // State for answer input
 
-  // Handler to select a question
-  const handleQuestionSelect = (question: SelectedQuestion) => {
+  // State for question suggestion
+  const [isSuggestingQuestion, setIsSuggestingQuestion] = useState(false);
+  const [suggestedQuestionText, setSuggestedQuestionText] = useState("");
+  const [suggestedQuestionContext, setSuggestedQuestionContext] = useState("");
+
+  // Handler to view answers for a selected question
+  const handleViewAnswers = (question: SelectedQuestion) => {
     setSelectedQuestion(question);
-    setActiveTab("questions"); // Ensure questions tab is active when viewing details
+    setIsAnswering(false); // Ensure not in answering mode
+    setActiveTab("questions"); // Ensure questions tab is active
+    setCurrentAnswer("");
   };
 
-  // Handler to go back to the list view
-  const handleGoBack = () => {
-    setSelectedQuestion(null);
+  // Handler to start answering a selected question
+  const handleStartAnswering = (question: SelectedQuestion) => {
+    setSelectedQuestion(question);
+    setIsAnswering(true); // Set answering mode to true
+    setCurrentAnswer(""); // Clear previous answer input
+    setActiveTab("questions"); // Ensure questions tab is active
   };
+
+  // Handler to go back to the list view or answer view
+  const handleGoBack = () => {
+    // If currently answering, go back to viewing answers for the same question
+    if (isAnswering) {
+      setIsAnswering(false);
+    } else {
+      // Otherwise, go back to the main question list
+      setSelectedQuestion(null);
+    }
+    // In both cases, ensure answering state is false
+    // setIsAnswering(false); // This line is redundant now due to the logic above
+  };
+
+  // Handler for submitting an answer (Placeholder)
+  const handleSubmitAnswer = () => {
+    alert(`답변 제출:\n${currentAnswer}`);
+    // TODO: Add actual submission logic here (e.g., API call)
+    // After submission, go back to viewing answers for the question
+    setIsAnswering(false);
+    setCurrentAnswer("");
+  };
+
+  // --- Question Suggestion Handlers ---
+  const handleStartSuggestion = () => {
+    setIsSuggestingQuestion(true);
+    setSelectedQuestion(null); // Ensure no question is selected
+    setIsAnswering(false); // Ensure not in answering mode
+    setSuggestedQuestionText("");
+    setSuggestedQuestionContext("");
+    setActiveTab("questions"); // Stay on the questions tab
+  };
+
+  const handleCancelSuggestion = () => {
+    setIsSuggestingQuestion(false);
+  };
+
+  const handleSubmitSuggestion = () => {
+    alert(
+      `질문 제안 제출:\n질문: ${suggestedQuestionText}\n컨텍스트: ${suggestedQuestionContext}`
+    );
+    // TODO: Add actual submission logic here
+    setIsSuggestingQuestion(false); // Go back to the question list
+  };
+  // --- End Question Suggestion Handlers ---
 
   return (
     <div className="w-full px-4 py-6 space-y-6">
@@ -332,7 +389,10 @@ export default function VeganGardenPage() {
           <nav aria-label="Breadcrumb">
             <ol className="flex items-center space-x-1 text-sm text-gray-500">
               <li>
-                <a href="#" className="hover:text-gray-700 hover:underline">
+                <a
+                  href="/garden"
+                  className="hover:text-gray-700 hover:underline"
+                >
                   가든
                 </a>
               </li>
@@ -352,13 +412,14 @@ export default function VeganGardenPage() {
                   />
                 </svg>
               </li>
-              {selectedQuestion ? (
-                // Breadcrumb for Detail View
+              {/* === Breadcrumb Logic Start === */}
+              {isSuggestingQuestion ? (
+                // Breadcrumb for Suggestion View
                 <>
                   <li>
-                    {/* Make this a link/button to go back */}
+                    {/* Link back to the main question list */}
                     <button
-                      onClick={handleGoBack}
+                      onClick={handleCancelSuggestion} // Use cancel handler to go back
                       className="hover:text-gray-700 hover:underline"
                     >
                       채식주의자
@@ -381,14 +442,82 @@ export default function VeganGardenPage() {
                     </svg>
                   </li>
                   <li>
-                    {/* Display truncated question text in breadcrumb */}
-                    <span
-                      className="font-medium text-gray-700 truncate max-w-[200px] sm:max-w-xs md:max-w-sm lg:max-w-md"
-                      title={selectedQuestion.text}
-                    >
-                      {selectedQuestion.text}
-                    </span>
+                    <span className="font-medium text-gray-700">질문 제안</span>
                   </li>
+                </>
+              ) : selectedQuestion ? (
+                // Breadcrumb for Detail View (Answers or Answering)
+                <>
+                  <li>
+                    <button
+                      onClick={handleGoBack} // Go back now handles both cases
+                      className="hover:text-gray-700 hover:underline"
+                    >
+                      채식주의자
+                    </button>
+                  </li>
+                  <li>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </li>
+                  {isAnswering ? (
+                    // Breadcrumb when answering
+                    <>
+                      <li>
+                        {/* Display truncated question text as a link to go back to viewing answers */}
+                        <button
+                          onClick={handleGoBack} // Go back to viewing answers
+                          className="hover:text-gray-700 hover:underline truncate max-w-[150px] sm:max-w-[200px] md:max-w-xs lg:max-w-sm"
+                          title={selectedQuestion.text}
+                        >
+                          {selectedQuestion.text}
+                        </button>
+                      </li>
+                      <li>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </li>
+                      <li>
+                        <span className="font-medium text-gray-700">
+                          나의 답변
+                        </span>
+                      </li>
+                    </>
+                  ) : (
+                    // Breadcrumb when viewing answers (existing logic)
+                    <li>
+                      <span
+                        className="font-medium text-gray-700 truncate max-w-[200px] sm:max-w-xs md:max-w-sm lg:max-w-md"
+                        title={selectedQuestion.text}
+                      >
+                        {selectedQuestion.text}
+                      </span>
+                    </li>
+                  )}
                 </>
               ) : (
                 // Breadcrumb for List View
@@ -401,64 +530,147 @@ export default function VeganGardenPage() {
         </div>
       </div>
 
-      {/* Conditional Rendering: List View or Detail View */}
-      {selectedQuestion ? (
-        // == Detail View ==
-        <div className="space-y-6">
-          {/* Answer List Card (Now directly follows breadcrumb) */}
-          <div className="w-full bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
-            <div className="max-w-[680px] mx-auto p-6 space-y-6">
-              <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
-                답변 {answers.length}개
-              </h3>
-              {answers.map((answer) => (
-                // Answer Card Structure (Applying discover/page.tsx style)
-                <div key={answer.id} className="pb-6 border-b last:border-b-0">
-                  {/* Profile Section */}
-                  <div className="flex items-center mb-4">
-                    <Image
-                      src={answer.profile.imageUrl}
-                      alt={answer.profile.name}
-                      width={40}
-                      height={40}
-                      className="rounded-full mr-3"
-                    />
-                    <span className="font-semibold text-gray-800 hover:text-gray-900 hover:underline cursor-pointer">
-                      {answer.profile.name}
-                    </span>
-                  </div>
-
-                  {/* Answer Text - Note: Applying negative margin like discover page */}
-                  <p className="font-sans text-xl leading-[1.7] text-gray-700 whitespace-pre-line">
-                    {answer.text}
-                  </p>
-
-                  {/* Bottom Section: Interest Button & Date */}
-                  <div className="flex justify-between items-center mt-4">
-                    {/* Interest Button (Static for now) */}
-                    <div className="relative group">
-                      {/* TODO: Add state/handler for interest per answer */}
-                      <button
-                        onClick={() =>
-                          alert("Interest toggle clicked for " + answer.id)
-                        }
-                      >
-                        <StarIcon filled={false} />
-                      </button>
-                      <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap invisible group-hover:visible">
-                        꾹 눌러서 관심
-                      </span>
-                    </div>
-                    {/* Date */}
-                    <p className="text-right text-sm text-gray-400">
-                      {formatDate(answer.date)}
-                    </p>
-                  </div>
-                </div>
-              ))}
+      {/* Conditional Rendering: Suggestion, List, Detail (Answers), or Answering View */}
+      {isSuggestingQuestion ? (
+        // == Suggestion View ==
+        <div className="w-full bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+          <div className="max-w-[680px] mx-auto p-6 space-y-4">
+            <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
+              질문 제안하기
+            </h3>
+            {/* Question Text Textarea */}
+            <textarea
+              rows={3}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-base font-sans leading-[1.7]"
+              placeholder="어떤 질문을 제안하고 싶으신가요?"
+              value={suggestedQuestionText}
+              onChange={(e) => setSuggestedQuestionText(e.target.value)}
+            />
+            {/* Question Context Textarea */}
+            <textarea
+              rows={5}
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-sm font-sans leading-[1.6] text-gray-600"
+              placeholder="질문의 배경이나 맥락을 추가하면 더 좋습니다 (선택 사항)"
+              value={suggestedQuestionContext}
+              onChange={(e) => setSuggestedQuestionContext(e.target.value)}
+            />
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={handleCancelSuggestion}
+                className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSubmitSuggestion}
+                className="px-4 py-2 text-sm rounded bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-50"
+                disabled={!suggestedQuestionText.trim()} // Disable if no question text
+              >
+                제안 등록
+              </button>
             </div>
           </div>
         </div>
+      ) : selectedQuestion ? (
+        isAnswering ? (
+          // == Answering View ==
+          <div className="w-full bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+            <div className="max-w-[680px] mx-auto p-6 space-y-4">
+              <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
+                질문에 답변하기
+              </h3>
+              {/* Display the question being answered */}
+              <p className="text-base text-gray-800 bg-gray-50 p-3 rounded">
+                {selectedQuestion.text}
+              </p>
+              {/* Answer Textarea */}
+              <textarea
+                rows={8}
+                className="w-full p-3 border border-gray-300 rounded-md focus:ring-cyan-500 focus:border-cyan-500 text-base font-sans leading-[1.7]"
+                placeholder="여기에 답변을 입력하세요..."
+                value={currentAnswer}
+                onChange={(e) => setCurrentAnswer(e.target.value)}
+              />
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-3">
+                <button
+                  onClick={handleGoBack} // Cancel goes back to viewing answers
+                  className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleSubmitAnswer} // Submit uses the handler
+                  className="px-4 py-2 text-sm rounded bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-50"
+                  disabled={!currentAnswer.trim()} // Disable if no text
+                >
+                  등록
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          // == Detail View (Viewing Answers) ==
+          <div className="space-y-6">
+            {/* Answer List Card (Existing Logic) */}
+            <div className="w-full bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
+              <div className="max-w-[680px] mx-auto p-6 space-y-6">
+                <h3 className="text-lg font-semibold text-gray-700 border-b pb-2">
+                  답변 {answers.length}개
+                </h3>
+                {answers.map((answer) => (
+                  // Answer Card Structure (Applying discover/page.tsx style)
+                  <div
+                    key={answer.id}
+                    className="pb-6 border-b last:border-b-0"
+                  >
+                    {/* Profile Section */}
+                    <div className="flex items-center mb-4">
+                      <Image
+                        src={answer.profile.imageUrl}
+                        alt={answer.profile.name}
+                        width={40}
+                        height={40}
+                        className="rounded-full mr-3"
+                      />
+                      <span className="font-semibold text-gray-800 hover:text-gray-900 hover:underline cursor-pointer">
+                        {answer.profile.name}
+                      </span>
+                    </div>
+
+                    {/* Answer Text - Note: Applying negative margin like discover page */}
+                    <p className="font-sans text-xl leading-[1.7] text-gray-700 whitespace-pre-line">
+                      {answer.text}
+                    </p>
+
+                    {/* Bottom Section: Interest Button & Date */}
+                    <div className="flex justify-between items-center mt-4">
+                      {/* Interest Button (Static for now) */}
+                      <div className="relative group">
+                        {/* TODO: Add state/handler for interest per answer */}
+                        <button
+                          onClick={() =>
+                            alert("Interest toggle clicked for " + answer.id)
+                          }
+                        >
+                          <StarIcon filled={false} />
+                        </button>
+                        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap invisible group-hover:visible">
+                          꾹 눌러서 관심
+                        </span>
+                      </div>
+                      {/* Date */}
+                      <p className="text-right text-sm text-gray-400">
+                        {formatDate(answer.date)}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )
       ) : (
         // == List View (Original Question/Event Card) ==
         <div className="w-full bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
@@ -492,12 +704,15 @@ export default function VeganGardenPage() {
             {activeTab === "questions" && (
               <div>
                 {/* Summary Line (remains the same) */}
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-8">
                   <span className="text-sm text-gray-600">
                     질문 {questions.length}개 · 답변{" "}
                     {questions.reduce((sum, q) => sum + q.answerCount, 0)}개
                   </span>
-                  <button className="text-sm text-cyan-600 hover:underline hover:cursor-pointer">
+                  <button
+                    className="text-sm text-cyan-600 hover:underline hover:cursor-pointer"
+                    onClick={handleStartSuggestion}
+                  >
                     질문 제안
                   </button>
                 </div>
@@ -526,7 +741,7 @@ export default function VeganGardenPage() {
                           <button
                             className="text-sm text-cyan-600 hover:underline focus:outline-none hover:cursor-pointer"
                             onClick={() =>
-                              handleQuestionSelect({ id: q.id, text: q.text })
+                              handleStartAnswering({ id: q.id, text: q.text })
                             }
                           >
                             답변하기
@@ -534,7 +749,7 @@ export default function VeganGardenPage() {
                           <button
                             className="text-sm text-cyan-600 hover:underline focus:outline-none hover:cursor-pointer"
                             onClick={() =>
-                              handleQuestionSelect({ id: q.id, text: q.text })
+                              handleViewAnswers({ id: q.id, text: q.text })
                             }
                           >
                             답변보기
