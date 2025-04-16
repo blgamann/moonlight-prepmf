@@ -13,7 +13,7 @@ export default function Home() {
         >
           <Image
             src="/logo.svg"
-            alt="Moonlight Logo"
+            alt="moonlight Logo"
             className="h-10 mr-2.5"
             width={40}
             height={40}
@@ -68,7 +68,7 @@ export default function Home() {
 
           {/* CTA Button with hover animations as in landing.html */}
           <a
-            href="/app"
+            href="/discover"
             className="cta-button group inline-flex items-center px-8 py-4 bg-[#6dd1e4] text-white font-bold rounded-full mt-8 transition-all hover:-translate-y-2 hover:shadow-lg hover:shadow-[#6dd1e4]/20"
           >
             가든 둘러보기
