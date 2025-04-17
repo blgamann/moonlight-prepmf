@@ -3,6 +3,7 @@
 import data from "@/data.json";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 const question = `영혜처럼 사회의 '정상성'에 의문을 품고 자신만의 길을 가고 싶었던 적이 있나요? 어떤 경험이었나요?`;
@@ -99,9 +100,13 @@ export default function DiscoverPage() {
                     className="rounded shadow-sm flex-shrink-0"
                   />
                   <div className="flex-grow">
-                    <h3 className="font-sans font-semibold text-gray-700 mb-1 hover:text-gray-900 hover:underline cursor-pointer">
-                      {book.author}의 『{book.title}』
-                    </h3>
+                    <Link href="/garden/vegan" passHref legacyBehavior>
+                      <a className="block">
+                        <h3 className="font-sans font-semibold text-gray-700 mb-1 hover:text-gray-900 hover:underline cursor-pointer">
+                          {book.author}의 『{book.title}』
+                        </h3>
+                      </a>
+                    </Link>
                     <p className="font-sans text-base text-gray-600">
                       {question}
                     </p>
