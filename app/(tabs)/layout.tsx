@@ -1,5 +1,4 @@
 import Sidebar from "@/components/app/sidebar";
-import Header from "@/components/app/header";
 
 export default function TabLayout({
   children,

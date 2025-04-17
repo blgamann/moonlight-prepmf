@@ -210,7 +210,6 @@ export default function GardenCard({
   author,
   title,
   description,
-  meta,
   stats,
   size = "large",
 }: GardenCardProps) {
