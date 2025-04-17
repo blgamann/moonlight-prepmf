@@ -375,7 +375,7 @@ export default function VeganGardenPage() {
   // --- End Question Suggestion Handlers ---
 
   return (
-    <div className="w-full px-4 py-6 space-y-6">
+    <div className="w-full bg-black px-4 py-6 space-y-6">
       {/* Book Detail Card Container (Always Visible) */}
       <div className="w-full bg-white rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
         <div className="max-w-[680px] mx-auto">
