@@ -8,6 +8,7 @@ const isPublicRoute = createRouteMatcher([
   "/soullink",
   "/notification",
   "/profile",
+  "/collection",
   "/sign-in(.*)",
   "/sign-up(.*)",
 ]);

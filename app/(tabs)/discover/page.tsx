@@ -115,7 +115,7 @@ export default function DiscoverPage() {
               </div>
             )}
 
-            <p className="font-sans text-xl leading-[1.7] text-gray-700 whitespace-pre-line">
+            <p className="font-sans text-xl md:text-lg leading-[1.7] text-gray-700 whitespace-pre-line">
               {answer}
             </p>
             <div className="flex justify-between items-center mt-4">

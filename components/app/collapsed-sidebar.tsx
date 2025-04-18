@@ -1,11 +1,11 @@
 "use client";
 
-import { Bell, Sparkles, Activity, BookOpen, UserRound } from "lucide-react";
+import { Bell, Sparkles, Activity, BookOpen, UserRound, Library } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export default function Sidebar() {
+export default function CollapsedSidebar() {
   const pathname = usePathname();
 
   const isActive = (path: string) => {
@@ -53,7 +53,7 @@ export default function Sidebar() {
             }`}
           />
           <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-[#222] text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-            가든
+            가든 검색
           </div>
         </Link>
         <Link
@@ -110,6 +110,25 @@ export default function Sidebar() {
           />
           <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-[#222] text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
             프로필
+          </div>
+        </Link>
+        <Link
+          href="/collection"
+          className={`${
+            isActive("/collection")
+              ? "text-white scale-[1.3]"
+              : "text-[#94a3b8] hover:text-white hover:scale-[1.3]"
+          } w-[22px] h-[22px] cursor-pointer transition-all duration-300 ease-in-out group relative`}
+        >
+          <Library
+            className={`w-full h-full stroke-current fill-none ${
+              isActive("/collection")
+                ? "stroke-white"
+                : "group-hover:stroke-white"
+            }`}
+          />
+          <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-[#222] text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            나의 모음
           </div>
         </Link>
       </div>
