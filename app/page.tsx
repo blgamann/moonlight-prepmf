@@ -1,6 +1,13 @@
 import { FeatureCard } from "@/components/landing/FeatureCard";
 import { StatCard } from "@/components/landing/StatCard";
 import Image from "next/image";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "moonlight - 관계가 피어나는 달빛 정원",
+  description:
+    "책을 통해 나를 찾고, 사람들과 연결되는 공간. 함께할수록 더욱 깊어지는 독서의 여정.",
+};
 
 export default function Home() {
   return (

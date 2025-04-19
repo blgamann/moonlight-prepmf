@@ -1,267 +1,397 @@
-"use client";
+"use client"; // Add this directive for useState
 
-import data from "@/data.json";
+import { useState } from "react"; // Import useState
+import UserInfoSection from "./UserInfoSection"; // Import the new component
+import AnswerSection from "./AnswerSection"; // Import the new component
+import UserRelationSection from "./UserRelationSection"; // Import the new combined section component
 
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
+// --- Define Interfaces for Data Structures ---
+interface UserProfile {
+  profile_id: string;
+  name: string;
+  imageUrl: string;
+  bio?: string; // Optional bio for target user data
+}
 
-const question = `영혜처럼 사회의 '정상성'에 의문을 품고 자신만의 길을 가고 싶었던 적이 있나요? 어떤 경험이었나요?`;
-const answer = `
-           대학교 때, 모두가 취업 준비에 몰두할 때 혼자서 인문학 스터디를 계속했던 기억이 나요. 당장은 불확실해 보였지만, 그때의 고민과 독서가 지금의 저를 만든 자양분이 되었다고 생각해요. 영혜처럼 거창하진 않아도, 남들이 '정상'이라고 생각하는 길에서 잠시 벗어나 자신만의 가치를 따랐던 작은 용기였죠.
-`;
+interface Book {
+  id: string;
+  title: string;
+  author: string;
+  imageUrl: string;
+}
 
-const profile = data.profiles.find((p) => p.id === "profile-5");
-const book = data.books.find((b) => b.id === "book-vegetarian");
-const currentAnswer = data.book_answers.find((a) => a.id === "a-veg-1");
+interface Question {
+  id: string;
+  question_text: string;
+}
 
-// Function to format date
-const formatDate = (dateString: string) => {
-  if (!dateString) return "";
-  return dateString.replace(/-/g, ". ") + ".";
+interface Answer {
+  id: string;
+  title: string;
+  answer_text: string;
+}
+
+interface MagazineArticle {
+  book: Book;
+  question: Question;
+  answer: Answer;
+}
+
+interface UserMagazine {
+  userData: UserProfile;
+  booksReadCount: number;
+  magazineData: MagazineArticle[];
+}
+
+interface ConnectionInfo {
+  degree: number;
+  path: UserProfile[];
+}
+
+// Type for the connectionPaths object
+interface ConnectionPathsData {
+  [viewingUserId: string]: {
+    [targetUserId: string]: ConnectionInfo;
+  };
+}
+
+// Interface for detailed common book info
+interface CommonBookDetail {
+  id: string;
+  title: string;
+  author: string;
+  imageUrl: string;
+}
+
+// Interface for Common Books Data (updated)
+interface CommonBooksInfo {
+  // count: number; // count can be derived from books.length
+  books: CommonBookDetail[]; // Array of detailed book objects
+}
+
+// Type for the commonBooksData object (updated)
+interface CommonBooksData {
+  [viewingUserId: string]: {
+    [targetUserId: string]: CommonBooksInfo;
+  };
+}
+
+// ---------------------------------------------
+
+// --- Data Setup for Multiple Users ---
+const allUserMagazines: UserMagazine[] = [
+  // User 1 Data
+  {
+    userData: {
+      profile_id: "profile-1",
+      name: "김민준",
+      imageUrl: "/profiles/profile1.png",
+      bio: "기술을 통해 사람들의 삶을 더 풍요롭게 만들고 싶습니다. 의미있는 연결을 통해 함께 성장하고 싶어요.",
+    },
+    booksReadCount: 2,
+    magazineData: [
+      {
+        book: {
+          id: "book-vegetarian",
+          title: "채식주의자",
+          author: "한강",
+          imageUrl: "/books/book1.jpg",
+        },
+        question: {
+          id: "q-veg-1",
+          question_text:
+            "영혜처럼 사회의 '정상성'에 의문을 품고 자신만의 길을 가고 싶었던 적이 있나요? 어떤 경험이었나요?",
+        },
+        answer: {
+          id: "a-veg-1",
+          title: "나만의 길, 작은 용기",
+          answer_text:
+            "대학교 때, 모두가 취업 준비에 몰두할 때 혼자서 인문학 스터디를 계속했던 기억이 나요. 당장은 불확실해 보였지만, 그때의 고민과 독서가 지금의 저를 만든 자양분이 되었다고 생각해요. 영혜처럼 거창하진 않아도, 남들이 '정상'이라고 생각하는 길에서 잠시 벗어나 자신만의 가치를 따랐던 작은 용기였죠.",
+        },
+      },
+      {
+        book: {
+          id: "book-seonghak",
+          title: "성학십도",
+          author: "퇴계 이황",
+          imageUrl: "/books/book2.jpg",
+        },
+        question: {
+          id: "q-sh-1",
+          question_text:
+            "퇴계 이황이 제시한 성리학적 수양 방법 중 현대 사회에서도 여전히 유효하다고 생각하는 부분이 있나요? 혹은 자신만의 마음 다스리는 방법이 있다면 소개해주세요.",
+        },
+        answer: {
+          id: "a-sh-1",
+          title: "현대 사회의 '경(敬)' 실천",
+          answer_text:
+            "퇴계 이황 선생님의 '경(敬)' 사상은 지금도 중요하다고 생각해요. 늘 깨어있는 마음으로 자신을 성찰하고 순간에 집중하는 태도는 복잡한 현대 사회에서 마음의 중심을 잡는 데 큰 도움이 됩니다. 저는 매일 아침 10분 정도 명상을 하면서 하루를 시작하는데, 이게 저만의 '경'을 실천하는 방식인 것 같아요.",
+        },
+      },
+    ],
+  },
+  // User 2 Data
+  {
+    userData: {
+      profile_id: "profile-2",
+      name: "이수현",
+      imageUrl: "/profiles/profile2.png",
+      bio: "다양한 관점을 탐구하고 이해하는 것을 즐깁니다. 책과 사람을 통해 세상을 배워가고 있어요.",
+    },
+    booksReadCount: 5,
+    magazineData: [
+      {
+        book: {
+          id: "book-homo-deus",
+          title: "호모 데우스: 미래의 역사",
+          author: "유발 하라리",
+          imageUrl: "/books/book3.jpg",
+        },
+        question: {
+          id: "q-hd-1",
+          question_text:
+            "유발 하라리가 예측하는 '호모 데우스'의 미래, 즉 인류가 기술을 통해 신적인 능력을 추구하는 것에 대해 어떻게 생각하시나요? 기대되는 점과 우려되는 점은 무엇인가요?",
+        },
+        answer: {
+          id: "a-hd-1",
+          title: "기술 발전의 빛과 그림자",
+          answer_text:
+            "기술로 질병과 노화를 극복하는 미래는 기대되지만, 그 혜택이 소수에게만 집중될까 봐 우려됩니다. 유전자를 편집해서 '맞춤 아기'를 만드는 세상이 온다면, 인간의 존엄성이나 다양성은 어떻게 될까요? 기술 발전의 방향에 대한 사회적 합의와 윤리적 고민이 반드시 필요하다고 생각합니다.",
+        },
+      },
+      {
+        book: {
+          id: "book-vegetarian",
+          title: "채식주의자",
+          author: "한강",
+          imageUrl: "/books/book1.jpg",
+        },
+        question: {
+          id: "q-veg-2",
+          question_text:
+            "책에서 묘사된 인간의 폭력성에 대해 어떻게 생각하시나요? 일상 속에서 폭력성의 다른 형태를 목격하거나 경험한 적이 있다면 이야기해주세요.",
+        },
+        answer: {
+          id: "a-veg-2",
+          title: "가장 무서운 폭력, 무관심",
+          answer_text:
+            "가장 무서운 폭력은 무관심이라고 생각해요. 영혜의 가족들이 보인 반응처럼요. 직접적인 폭력만큼이나, 혹은 그보다 더 깊은 상처를 줄 수 있죠. 직장에서 동료가 부당한 일을 겪는 것을 알면서도 침묵했던 제 모습이 떠올라 부끄러웠습니다. 이후로는 작게나마 목소리를 내려고 노력하고 있어요.",
+        },
+      },
+    ],
+  },
+];
+// -------------------------------
+
+// --- Mock Viewing User and Connection Data ---
+// Assume the current viewing user is 정현우
+const viewingUserProfile: UserProfile = {
+  profile_id: "profile-5", // Use ID from data.json
+  name: "정현우",
+  imageUrl: "/profiles/profile5.png", // Use correct image path from data.json
 };
 
-// Star SVG Icon Component
-const StarIcon = ({ filled }: { filled: boolean }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill={filled ? "currentColor" : "none"}
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={`cursor-pointer ${
-      filled ? "text-yellow-400" : "text-gray-400 hover:text-gray-600"
-    }`}
-  >
-    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-  </svg>
-);
+// Apply the defined type to connectionPaths
+const connectionPaths: ConnectionPathsData = {
+  [viewingUserProfile.profile_id]: {
+    "profile-1": {
+      degree: 2,
+      path: [
+        {
+          profile_id: "profile-intermediate-1",
+          name: "박지훈",
+          imageUrl: "/profiles/profile3.png",
+        },
+      ],
+    },
+    "profile-2": {
+      degree: 3,
+      path: [
+        {
+          profile_id: "profile-intermediate-1",
+          name: "박지훈",
+          imageUrl: "/profiles/profile3.png",
+        },
+        {
+          profile_id: "profile-intermediate-2",
+          name: "최유나",
+          imageUrl: "/profiles/profile4.png",
+        },
+      ],
+    },
+  },
+};
 
-// Placeholder for total number of answers
-const totalAnswers = 10; // Example: Assume there are 10 answers
+// --- Mock Common Books Data (Updated with full book details) ---
+const commonBooksData: CommonBooksData = {
+  [viewingUserProfile.profile_id]: {
+    "profile-1": {
+      // 정현우 - 김민준
+      books: [
+        {
+          id: "book-vegetarian",
+          title: "채식주의자",
+          author: "한강",
+          imageUrl: "/books/book1.jpg",
+        },
+        {
+          id: "book-seonghak",
+          title: "성학십도",
+          author: "퇴계 이황",
+          imageUrl: "/books/book2.jpg",
+        },
+      ],
+    },
+    "profile-2": {
+      // 정현우 - 이수현 (Changed Sapiens to Vegetarian)
+      books: [
+        {
+          id: "book-homo-deus",
+          title: "호모 데우스: 미래의 역사",
+          author: "유발 하라리",
+          imageUrl: "/books/book3.jpg",
+        },
+        {
+          id: "book-vegetarian",
+          title: "채식주의자",
+          author: "한강",
+          imageUrl: "/books/book1.jpg",
+        },
+      ],
+    },
+  },
+};
+// -------------------------------------------
 
 export default function DiscoverPage() {
-  const [isInterested, setIsInterested] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0); // Start at the first answer
+  // State for current user index
+  const [currentUserIndex, setCurrentUserIndex] = useState(0);
+  // State for current article index within the current user's magazine
+  const [currentArticleIndex, setCurrentArticleIndex] = useState(0);
 
-  // Placeholder navigation functions
-  const goToPrevious = () => {
-    setCurrentIndex((prevIndex) =>
-      prevIndex === 0 ? totalAnswers - 1 : prevIndex - 1
+  const totalUsers = allUserMagazines.length;
+  const currentUserMagazine = allUserMagazines[currentUserIndex];
+  const totalArticles = currentUserMagazine.magazineData.length;
+
+  // Get current article data for the selected user
+  const currentArticle = currentUserMagazine.magazineData[currentArticleIndex];
+  const currentUserData = currentUserMagazine.userData;
+  const currentBooksReadCount = currentUserMagazine.booksReadCount;
+
+  // Get connection info for the currently displayed user
+  const connectionInfo =
+    connectionPaths[viewingUserProfile.profile_id]?.[
+      currentUserData.profile_id
+    ];
+
+  // Get common books info for the currently displayed user
+  const commonBooksInfo =
+    commonBooksData[viewingUserProfile.profile_id]?.[
+      currentUserData.profile_id
+    ];
+
+  // --- Navigation Handlers ---
+
+  // Article Navigation
+  const handlePreviousArticle = () => {
+    setCurrentArticleIndex((prevIndex) =>
+      prevIndex === 0 ? totalArticles - 1 : prevIndex - 1
     );
-    // TODO: Add logic to update displayed answer, profile, etc.
   };
 
-  const goToNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % totalAnswers);
-    // TODO: Add logic to update displayed answer, profile, etc.
+  const handleNextArticle = () => {
+    setCurrentArticleIndex((prevIndex) =>
+      prevIndex === totalArticles - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  // User Navigation
+  const handlePreviousUser = () => {
+    setCurrentUserIndex((prevIndex) => {
+      const newIndex = prevIndex === 0 ? totalUsers - 1 : prevIndex - 1;
+      setCurrentArticleIndex(0); // Reset article index when user changes
+      return newIndex;
+    });
+  };
+
+  const handleNextUser = () => {
+    setCurrentUserIndex((prevIndex) => {
+      const newIndex = prevIndex === totalUsers - 1 ? 0 : prevIndex + 1;
+      setCurrentArticleIndex(0); // Reset article index when user changes
+      return newIndex;
+    });
   };
 
   return (
-    <div className="w-full bg-black px-4 py-6">
-      {/* New Main Content Wrapper */}
-      <div className="max-w-[728px] mx-auto">
-        {/* Question Card */}
+    <div className="min-h-screen bg-black text-white p-4 flex flex-col pt-12 relative">
+      {/* Main Content Area */}
+      <div className="max-w-[680px] mx-auto w-full flex-grow">
+        {/* Pass current user's data */}
+        <UserInfoSection
+          user={currentUserData}
+          booksReadCount={currentBooksReadCount}
+        />
 
-        {/* Answer Card */}
-        <div className="w-full bg-white p-6 rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)] mt-6">
-          <div>
-            {/* Moved Profile Info to the top */}
-            {profile && (
-              <div className="flex items-center mb-6">
-                {" "}
-                {/* Increased bottom margin */}
-                <Image
-                  src={profile.imageUrl}
-                  alt={profile.name}
-                  width={40}
-                  height={40}
-                  className="rounded-full mr-3"
-                />
-                <span className="font-semibold text-gray-800 hover:text-gray-900 hover:underline cursor-pointer">
-                  {profile.name}
-                </span>
-              </div>
-            )}
+        {/* Use the AnswerSection component with current user's article data */}
+        <AnswerSection
+          answer={currentArticle.answer}
+          question={currentArticle.question}
+          book={currentArticle.book}
+        />
 
-            {/* Inner Card for Book and Question */}
-            {book && (
-              <div className="bg-gray-50 p-4 rounded-md shadow-inner">
-                <div className="flex items-start space-x-4">
-                  <Image
-                    src={book.imageUrl}
-                    alt={book.title}
-                    width={40} // Adjusted size for inner card
-                    height={60} // Adjusted size for inner card
-                    className="rounded shadow-sm flex-shrink-0"
-                  />
-                  <div className="flex-grow">
-                    <Link href="/garden/vegan" passHref legacyBehavior>
-                      <a className="block">
-                        <h3 className="font-sans font-semibold text-gray-700 mb-1 hover:text-gray-900 hover:underline cursor-pointer">
-                          {book.author}의 『{book.title}』
-                        </h3>
-                      </a>
-                    </Link>
-                    <p className="font-sans text-base text-gray-600">
-                      {question}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <p className="font-sans text-xl md:text-lg leading-[1.7] text-gray-700 whitespace-pre-line">
-              {answer}
-            </p>
-            <div className="flex justify-between items-center mt-4">
-              <div className="relative group">
-                <button onClick={() => setIsInterested(!isInterested)}>
-                  <StarIcon filled={isInterested} />
-                </button>
-                <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap invisible group-hover:visible">
-                  꾹 눌러서 관심
-                </span>
-              </div>
-              {currentAnswer && (
-                <p className="text-right text-sm text-gray-400">
-                  {formatDate(currentAnswer.date)}
-                </p>
-              )}
-            </div>
-          </div>
+        {/* Article Navigation */}
+        <div className="flex justify-between items-center mt-6">
+          <button
+            onClick={handlePreviousArticle}
+            className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50"
+            disabled={totalArticles <= 1} // Disable if only one article
+          >
+            이전 글
+          </button>
+          <span className="text-sm text-gray-400">
+            {totalArticles > 0 ? currentArticleIndex + 1 : 0} / {totalArticles}
+          </span>
+          <button
+            onClick={handleNextArticle}
+            className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50"
+            disabled={totalArticles <= 1} // Disable if only one article
+          >
+            다음 글
+          </button>
         </div>
 
-        {/* Container for Soul Line and Books Read Together Cards */}
-        <div className="flex flex-col mt-6">
-          {/* Soul Line Section Card */}
-          <div className="w-full bg-white p-6 rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
-            {" "}
-            {/* Removed mx-auto */} {/* Removed mt-6 */}
-            <div>
-              {" "}
-              {/* Inner content wrapper */}
-              <p className="text-center text-gray-600 text-sm mb-6">
-                {/* TODO: Update this text based on profiles related to currentIndex */}
-                {data.profiles.length > 1
-                  ? `${data.profiles[0].name}님과 ${
-                      data.profiles[data.profiles.length - 1].name
-                    }님은 ${data.profiles.length - 1}촌 관계입니다.`
-                  : "프로필이 더 필요합니다."}
-              </p>
-              <div className="flex justify-center items-center">
-                {/* TODO: Update this list based on profiles related to currentIndex */}
-                {data.profiles.map((profile, index, arr) => (
-                  <div key={profile.id} className="flex items-center">
-                    <div className="flex flex-col items-center text-center mx-2">
-                      <Image
-                        src={profile.imageUrl}
-                        alt={profile.name}
-                        width={60}
-                        height={60}
-                        className="rounded-full object-cover shadow-md mb-1"
-                      />
-                      <span
-                        className={`text-sm text-gray-700 hover:underline cursor-pointer ${
-                          index === 0 || index === arr.length - 1
-                            ? "font-bold"
-                            : "font-medium"
-                        }`}
-                      >
-                        {profile.name}
-                      </span>
-                    </div>
-                    {index < arr.length - 1 && (
-                      <div className="w-8 h-px border-t border-dashed border-cyan-400"></div> // Adjusted shorter line
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+        {/* Render Combined User Relation Section if either connection or common books info exists */}
+        {(connectionInfo ||
+          (commonBooksInfo && commonBooksInfo.books?.length > 0)) && (
+          <UserRelationSection
+            viewingUser={viewingUserProfile}
+            targetUser={currentUserData}
+            connectionInfo={connectionInfo} // Pass connection info (might be undefined)
+            commonBooksInfo={commonBooksInfo} // Pass common books info (might be undefined or have empty books)
+          />
+        )}
+      </div>
 
-          {/* Books Read Together Card */}
-          <div className="w-full bg-white p-6 rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)] mt-6">
-            {" "}
-            {/* Removed mx-auto */}
-            <div>
-              {" "}
-              {/* Inner content wrapper */}
-              <p className="text-center text-gray-600 text-sm mb-6">
-                {/* TODO: Update this text based on profiles/books related to currentIndex */}
-                {data.profiles.length > 1
-                  ? `${data.profiles[0].name}님과 ${
-                      data.profiles[data.profiles.length - 1].name
-                    }님은 함께 읽은 책이 ${
-                      data.books.slice(0, 3).length
-                    }권입니다.`
-                  : "프로필 정보를 불러올 수 없습니다."}
-              </p>
-              <div className="flex space-x-4 justify-center">
-                {/* TODO: Update this list based on profiles/books related to currentIndex */}
-                {data.books.slice(0, 3).map((book) => (
-                  <div
-                    key={book.id}
-                    className="flex flex-col items-center text-center w-20"
-                  >
-                    <Image
-                      src={book.imageUrl}
-                      alt={book.title}
-                      width={50} // Adjust size as needed
-                      height={75} // Adjust size as needed
-                      className="rounded shadow-md mb-2 object-cover"
-                    />
-                    {/* Apply hover effect and ensure consistent height/alignment */}
-                    <span
-                      className="text-xs text-gray-600 leading-tight hover:underline cursor-pointer line-clamp-2 h-8" /* Use fixed height h-8, removed min-h */
-                      style={{
-                        display: "-webkit-box",
-                        WebkitBoxOrient: "vertical",
-                        WebkitLineClamp: 2,
-                        overflow: "hidden",
-                      }} /* Necessary for line-clamp */
-                    >
-                      {book.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+      {/* Re-add Sticky Footer for User Navigation */}
+      <div className="sticky bottom-0 left-0 right-0 pb-4 pt-2 bg-black bg-opacity-80 backdrop-blur-sm z-40">
+        <div className="max-w-[680px] mx-auto flex justify-between items-center px-4">
+          <button
+            onClick={handlePreviousUser}
+            className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 text-white text-sm"
+          >
+            다른 사용자 (이전)
+          </button>
+          <span className="text-xs text-gray-400">
+            사용자 {currentUserIndex + 1} / {totalUsers}
+          </span>
+          <button
+            onClick={handleNextUser}
+            className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 text-white text-sm"
+          >
+            다른 사용자 (다음)
+          </button>
         </div>
-
-        {/* Navigation Card - Padding already p-6 */}
-        <div className="w-full bg-white p-6 rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)] mt-6">
-          <div className="flex items-center justify-between space-x-4">
-            {" "}
-            {/* Changed justify-center to justify-between */}
-            <button
-              onClick={goToPrevious}
-              className="flex-1 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50 text-center" /* Added flex-1, py-2, text-center */
-              // disabled={currentIndex === 0} // Enable/disable logic if needed
-            >
-              이전
-            </button>
-            <span className="text-sm text-gray-500 font-medium whitespace-nowrap">
-              {" "}
-              {/* Added whitespace-nowrap */}
-              {currentIndex + 1} / {totalAnswers}
-            </span>
-            <button
-              onClick={goToNext}
-              className="flex-1 px-3 py-2 text-sm text-gray-600 bg-gray-100 rounded hover:bg-gray-200 disabled:opacity-50 text-center" /* Added flex-1, py-2, text-center */
-              // disabled={currentIndex === totalAnswers - 1} // Enable/disable logic if needed
-            >
-              다음
-            </button>
-          </div>
-        </div>
-      </div>{" "}
-      {/* End of New Main Content Wrapper */}
+      </div>
     </div>
   );
 }
