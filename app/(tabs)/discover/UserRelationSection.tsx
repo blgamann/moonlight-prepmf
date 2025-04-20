@@ -138,7 +138,7 @@ const UserRelationSection: React.FC<UserRelationSectionProps> = ({
                 className="rounded-full border-2 border-green-500"
               />
               <span className="mt-1 text-xs truncate w-full">
-                {targetUser.name} // Uses potentially overridden targetUser
+                {targetUser.name}
               </span>
             </div>
           </div>

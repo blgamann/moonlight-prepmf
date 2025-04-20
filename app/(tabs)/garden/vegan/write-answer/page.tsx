@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import data from "../../../../../data.json"; // Import data
@@ -22,8 +22,8 @@ const book: Book = typedData.books[0]; // Assuming book[0] is the relevant book 
 const questionText =
   "영혜처럼 사회의 '정상성'에 의문을 품고 자신만의 길을 가고 싶었던 적이 있나요? 어떤 경험이 었나요?";
 
-// --- Page Component ---
-export default function WriteAnswerPage() {
+// --- Component to handle Suspense logic ---
+function WriteAnswerContent() {
   const searchParams = useSearchParams();
   const from = searchParams?.get("from");
 
@@ -136,5 +136,15 @@ export default function WriteAnswerPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+// --- Page Component ---
+export default function WriteAnswerPage() {
+  // Wrap the component using useSearchParams with Suspense
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <WriteAnswerContent />
+    </Suspense>
   );
 }

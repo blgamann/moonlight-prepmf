@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import data from "../../../../../data.json"; // Import data for fallback
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,196 +13,6 @@ type Book = {
   description?: string;
   imageUrl: string;
 };
-
-type Profile = {
-  id: string;
-  name: string;
-  imageUrl: string;
-};
-
-// --- Modal Component --- //
-// NOTE: Assuming the full ProfileListModal implementation is here
-const ProfileListModal = ({
-  title,
-  profiles,
-  onClose,
-}: {
-  title: string;
-  profiles: Profile[];
-  onClose: () => void;
-}) => {
-  if (!profiles || profiles.length === 0) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 backdrop-blur-sm">
-      <div className="bg-gray-900 border border-gray-700 rounded-lg shadow-xl w-full max-w-xs mx-4 p-6 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-400 hover:text-gray-200"
-          aria-label="Close modal"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth="2"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
-          </svg>
-        </button>
-        <h3 className="text-xl font-semibold mb-4 text-gray-200">{title}</h3>
-        <ul className="space-y-3 max-h-60 overflow-y-auto">
-          {profiles.map((profile) => (
-            <li key={profile.id} className="flex items-center">
-              <Image
-                src={profile.imageUrl}
-                alt={profile.name}
-                width={32}
-                height={32}
-                className="rounded-full mr-3"
-              />
-              <span className="text-base text-gray-300">{profile.name}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-};
-
-// --- BookDetailCard Component --- //
-// NOTE: Assuming the full BookDetailCard implementation is here
-function BookDetailCard() {
-  const [isInterested, setIsInterested] = useState(false);
-  const [hasRead, setHasRead] = useState(false);
-  const [showInterestedModal, setShowInterestedModal] = useState(false);
-  const [showReadersModal, setShowReadersModal] = useState(false);
-  const [modalProfiles, setModalProfiles] = useState<Profile[]>([]);
-  const [modalTitle, setModalTitle] = useState("");
-
-  const book: Book = data.books[0];
-  const { title, author, imageUrl, description } = book;
-  const interestedMembersCount = 3;
-  const readersCount = 3;
-  const placeholderInterestedProfiles = data.profiles.slice(0, 3);
-  const placeholderReaderProfiles = data.profiles.slice(1, 4);
-
-  const toggleInterest = () => setIsInterested(!isInterested);
-  const toggleRead = () => setHasRead(!hasRead);
-
-  const openModal = (type: "interested" | "readers") => {
-    if (type === "interested") {
-      setModalProfiles(placeholderInterestedProfiles);
-      setModalTitle("관심 멤버");
-      setShowInterestedModal(true);
-    } else {
-      setModalProfiles(placeholderReaderProfiles);
-      setModalTitle("독자");
-      setShowReadersModal(true);
-    }
-  };
-
-  const closeModal = () => {
-    setShowInterestedModal(false);
-    setShowReadersModal(false);
-    setModalProfiles([]);
-    setModalTitle("");
-  };
-
-  return (
-    <div className="w-full p-6">
-      <div className="flex gap-6 md:gap-8">
-        <div className="w-[120px] md:w-[150px] flex-shrink-0">
-          <div className="relative aspect-[3/4] rounded-lg overflow-hidden shadow-sm border border-gray-700">
-            <Image
-              src={imageUrl}
-              alt={`${title} 책 표지`}
-              fill
-              sizes="(max-width: 768px) 120px, 150px"
-              className="object-cover"
-              priority
-            />
-          </div>
-        </div>
-        <div className="flex-1 flex flex-col justify-between">
-          <div className="space-y-3">
-            <h1 className="text-2xl font-semibold text-gray-100">{`${author}의 『${title}』`}</h1>
-            {description && (
-              <p className="text-base text-gray-400 mt-1">{description}</p>
-            )}
-            <div className="flex gap-4 text-base text-gray-400">
-              <div
-                className="flex items-center gap-1 cursor-pointer hover:text-blue-400 hover:underline"
-                onClick={() => openModal("interested")}
-              >
-                <span>구독 멤버</span>
-                <span className="font-semibold text-blue-400">
-                  {interestedMembersCount}명
-                </span>
-              </div>
-              <div
-                className="flex items-center gap-1 cursor-pointer hover:text-blue-400 hover:underline"
-                onClick={() => openModal("readers")}
-              >
-                <span>독자</span>
-                <span className="font-semibold text-blue-400">
-                  {readersCount}명
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 mt-4">
-            <button
-              className={`flex-1 px-3 py-1.5 text-base rounded ${
-                isInterested
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600"
-              }`}
-              onClick={toggleInterest}
-            >
-              {isInterested ? "구독 해제" : "가든 구독"}
-            </button>
-            <button
-              className={`flex-1 px-3 py-1.5 text-base rounded ${
-                hasRead
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600"
-              }`}
-              onClick={toggleRead}
-            >
-              {hasRead ? "읽은 책 취소" : "읽은 책 등록"}
-            </button>
-            <button
-              className="flex-1 px-3 py-1.5 text-base rounded bg-gray-700 border border-gray-600 text-gray-300 hover:bg-gray-600"
-              onClick={() => alert("책 구매 페이지로 이동합니다.")}
-            >
-              책 구매
-            </button>
-          </div>
-        </div>
-      </div>
-      {showInterestedModal && (
-        <ProfileListModal
-          title={modalTitle}
-          profiles={modalProfiles}
-          onClose={closeModal}
-        />
-      )}
-      {showReadersModal && (
-        <ProfileListModal
-          title={modalTitle}
-          profiles={modalProfiles}
-          onClose={closeModal}
-        />
-      )}
-    </div>
-  );
-}
 
 // --- Main Page Component ---
 export default function QuestionSuggestPage() {
@@ -276,9 +85,7 @@ export default function QuestionSuggestPage() {
               &larr; 가든으로 돌아가기
             </Link>
           </div>
-            <h2 className="text-xl font-semibold text-gray-200">
-              질문 제안하기
-            </h2>
+          <h2 className="text-xl font-semibold text-gray-200">질문 제안하기</h2>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>

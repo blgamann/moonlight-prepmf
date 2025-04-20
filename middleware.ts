@@ -1,7 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
-  "/",
   "/discover",
   "/garden",
   "/garden/vegan",
@@ -18,8 +18,13 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  if (req.nextUrl.pathname === "/") {
+    const discoverUrl = new URL("/discover", req.url);
+    return NextResponse.redirect(discoverUrl);
+  }
+
   if (!isPublicRoute(req)) {
-    await auth.protect();
+    auth.protect();
   }
 });
 
