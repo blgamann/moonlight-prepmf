@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link"; // Import Link from next/link
-// import Image from "next/image"; // Removed Image import
+import Image from "next/image";
+import Link from "next/link";
 
-// Define interfaces for the API response structure
-interface BookItem {
+// Interface for Book Search Result Item based on search-result.json
+interface BookSearchResult {
   title: string;
   link: string;
   image: string;
@@ -17,315 +17,197 @@ interface BookItem {
   description: string;
 }
 
-// Sample book data
-const sampleBooks: BookItem[] = [
-  {
-    title: "채식주의자 (한강 소설ㅣ2024년 노벨문학상 수상작가)",
-    link: "https://search.shopping.naver.com/book/catalog/32482041666",
-    image:
-      "https://shopping-phinf.pstatic.net/main_3248204/32482041666.20230725121007.jpg",
-    author: "한강",
-    discount: "13500",
-    publisher: "창비",
-    pubdate: "20220328",
-    isbn: "9788936434595",
-    description: `인터내셔널 부커상, 산클레멘테 문학상 수상작
-전세계가 주목한 한강의 역작을 다시 만나다
+// Mock search results data (replace with actual API call later)
+import mockSearchResults from "@/search-result.json"; // Assuming search-result.json is in the root or accessible path
 
-2016년 인터내셔널 부커상을 수상하며 한국문학의 입지를 한단계 확장시킨 한강의 장편소설 『채식주의자』를 15년 만에 새로운 장정으로 선보인다. 상처받은 영혼의 고통과 식물적 상상력의 강렬한 결합을 정교한 구성과 흡인력 있는 문체로 보여주는 이 작품은 섬뜩한 아름다움의 미학을 한강만의 방식으로 완성한 역작이다. "탄탄하고 정교하며 충격적인 작품으로, 독자들의 마음에 그리고 아마도 그들의 꿈에 오래도록 머물 것이다"라는 평을 받으며 인터내셔널 부커상을 수상했던 『채식주의자』는 "미국 문학계에 파문을 일으키면서도 독자들과 공명할 것으로 보인다"(뉴욕타임스), "놀라울 정도로 아름다운 산문과 믿을 수 없을 만큼 폭력적인 내용의 조합이 충격적이다"(가디언)라는 해외서평을 받았고 2018년에는 스페인에서 산클레멘테 문학상을 받는 등 전세계에서 뜨거운 반응을 일으켰다. 국내에서는 현재까지 100만부 가까이 판매되었다.
+const GardenPage = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<BookSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  // Placeholder for recent searches
+  const [recentSearches, setRecentSearches] = useState<string[]>([
+    "채식주의자",
+    "노르웨이의 숲",
+    "사피엔스",
+  ]);
 
-『채식주의자』는 어느 날부터 육식을 거부하며 가족들과 갈등을 빚기 시작하는 '영혜'가 중심인물로 등장하는 장편소설이다. 하지만 소설은 영혜를 둘러싼 세 인물인 남편, 형부, 언니의 시선에서 서술되며 영혜는 단 한번도 주도적인 화자의 위치를 얻지 못한다. 가족의 이름으로 자행되는 가부장의 폭력, 그리고 그 폭력에 저항하며 금식을 통해 동물성을 벗어던지고 나무가 되고자 한 영혜가 보여주는 식물적 상상력의 경지는 모든 세대 독자를 아우르며 더 크나큰 공명을 이루어낼 것이다.`,
-  },
-  {
-    title: "채식주의자 (한강 소설ㅣ2024년 노벨문학상 수상작가)",
-    link: "https://search.shopping.naver.com/book/catalog/32441031268",
-    image:
-      "https://shopping-phinf.pstatic.net/main_3244103/32441031268.20230404163921.jpg",
-    author: "한강",
-    discount: "24800",
-    publisher: "창비",
-    pubdate: "20071030",
-    isbn: "9788936433598",
-    description: `한국인 최초 맨부커상 수상작가 한강의 새로운 시도!
-
-한국인 최초 맨부커상 수상작 『채식주의자』. 1부《채식주의자》,  2005년 이상문학상 수상작인 2부 《몽고반점》, 그리고  3부《나무 불꽃》으로 구성되어 있다. 단아하고 시심 어린 문체와 밀도있는 구성력이라는 작가 특유의 개성이 고스란히 살아 있으면서도 상처 입은 영혼의 고통을 식물적인 상상력에 결합시켜 섬뜩한 아름다움의 미학을 완성했다는 평가를 받았다. 
-
-어린시절 자신의 다리를 문 개를 죽이는 장면이 뇌리에 박혀 점점 육식을 멀리하고 스스로가 나무가 되어간다고 생각하는 영혜를 주인공으로 각 편에서 다른 화자가 등장한다. 《채식주의자》에서는 아내의 행동을 이해할 수 없는 남편, 《몽고반점》에서는 처제의 엉덩이에 남은 몽고반점을 탐하며 예술혼을 불태우는 사진작가인 영혜의 형부, 세번째 《나무 불꽃》에서는 남편과 여동생의 불륜을 목격했으나 그렇게 살아갈 수밖에 없는 인혜가 화자로 등장한다.
-
-잔잔한 목소리지만 숨 막힐 듯한 흡인력이 돋보이는 이 소설은 상처받은 영혼의 고통과 식물적인 상상력을 결합시켜 섬뜩하지만 아름다운 미적 경지를 보여준다. 지금까지 저자가 발표해온 작품에 등장했던 욕망, 식물성, 죽음, 존재론 등의 문제를 한데 집약시켜놓은 것이라는 평을 받고 있다.`,
-  },
-  {
-    title: "채식주의자(큰글자도서) (한강 장편소설)",
-    link: "https://search.shopping.naver.com/book/catalog/51121223622",
-    image:
-      "https://shopping-phinf.pstatic.net/main_5112122/51121223622.20241105090344.jpg",
-    author: "한강",
-    discount: "31500",
-    publisher: "창비",
-    pubdate: "20241101",
-    isbn: "9788936480615",
-    description: `인터내셔널 부커상, 산클레멘테 문학상 수상작
-전세계가 주목한 한강의 역작을 만나다
-
-2016년 인터내셔널 부커상을 수상하며 한국문학의 입지를 한단계 확장시킨 한강의 장편소설 『채식주의자』를 15년 만에 새로운 장정으로 선보인다. 상처받은 영혼의 고통과 식물적 상상력의 강렬한 결합을 정교한 구성과 흡인력 있는 문체로 보여주는 이 작품은 섬뜩한 아름다움의 미학을 한강만의 방식으로 완성한 역작이다. "탄탄하고 정교하며 충격적인 작품으로, 독자들의 마음에 그리고 아마도 그들의 꿈에 오래도록 머물 것이다"라는 평을 받으며 인터내셔널 부커상을 수상했던 『채식주의자』는 "미국 문학계에 파문을 일으키면서도 독자들과 공명할 것으로 보인다"(뉴욕타임스), "놀라울 정도로 아름다운 산문과 믿을 수 없을 만큼 폭력적인 내용의 조합이 충격적이다"(가디언)라는 해외서평을 받았고 2018년에는 스페인에서 산클레멘테 문학상을 받는 등 전세계에서 뜨거운 반응을 일으켰다. 국내에서는 100만부 이상 판매된 데 이어 노벨 문학상 발표 이후 40만부(10/15 현재)가 제작되었다.
-『채식주의자』는 어느 날부터 육식을 거부하며 가족들과 갈등을 빚기 시작하는 '영혜'가 중심인물로 등장하는 장편소설이다. 하지만 소설은 영혜를 둘러싼 세 인물인 남편, 형부, 언니의 시선에서 서술되며 영혜는 단 한번도 주도적인 화자의 위치를 얻지 못한다. 가족의 이름으로 자행되는 가부장의 폭력, 그리고 그 폭력에 저항하며 금식을 통해 동물성을 벗어던지고 나무가 되고자 한 영혜가 보여주는 식물적 상상력의 경지는 모든 세대 독자를 아우르며 더 크나큰 공명을 이루어낼 것이다.`,
-  },
-  {
-    title:
-      "크리스천 채식주의자 (《채식주의자》가 던진 질문에 대한 기독교적 성찰)",
-    link: "https://search.shopping.naver.com/book/catalog/51801009621",
-    image:
-      "https://shopping-phinf.pstatic.net/main_5180100/51801009621.20241208071303.jpg",
-    author: "장대은",
-    discount: "9000",
-    publisher: "세움북스",
-    pubdate: "20241215",
-    isbn: "9791193996317",
-    description: `"우리는 타인의 고통과 다름을 어떻게 이해하고 있나?"
-ㆍ 한강의 《채식주의자》를 통해 신앙의 정체성 되짚기
-ㆍ 인간의 본질, 사회의 폭력성, 그리고 개인의 자유와 존엄에 관한 깊은 탐구
-ㆍ 소그룹 나눔을 위한 질문 수록
-
-한강 작가의 소설 《채식주의자》는 우리에게 특별한 성찰의 기회를 제공합니다. 이 작품은 단순히 한 여성이 육식을 금하고 채식주의자로서의 삶을 선택한 것에 관한 이야기가 아닙니다. 그것은 인간의 본질, 사회의 폭력성, 그리고 개인의 자유와 존엄에 관한 깊은 탐구입니다. 
-《채식주의자》의 영혜처럼 우리 주변에는 고통 받고 소외된 이들이 많습니다. 그들은 우리의 교회 안에도, 밖에도 있습니다. 그들의 목소리는 종종 우리의 편견과 고정관념에 의해 묵살되곤 합니다. 우리는 그들의 이야기를 듣고 있습니까, 아니면 우리의 '진리'로 그들을 재단하고 있습니까?
-《크리스천 채식주의자》는 한강의 《채식주의자》에 대해 분석하며 평가하는 책이 아닙니다. 크리스천으로서의 정체성을 다시 한 번 돌아보게 하는 책입니다. 우리가 믿는 하나님은 과연 어떤 분이신지, 그분이 우리에게 원하시는 삶은 무엇인지, 그리고 우리가 어떻게 그 뜻을 실천할 수 있을지를 고민해 보고자 합니다. 문학과 신앙을 넘나드는 특별한 여정에 독자 여러분들을 초대합니다.`,
-  },
-  {
-    title: "Цагаан хоолтон (채식주의자 몽골판)",
-    link: "https://search.shopping.naver.com/book/catalog/51016557619",
-    image:
-      "https://shopping-phinf.pstatic.net/main_5101655/51016557619.20241024165028.jpg",
-    author: "한강",
-    discount: "27450",
-    publisher: "Монсудар хэвлэлийн газар",
-    pubdate: "20241024",
-    isbn: "9789919281298",
-    description: ``,
-  },
-  {
-    title: "무민은 채식주의자 (짧아도 괜찮아 4)",
-    link: "https://search.shopping.naver.com/book/catalog/32492906847",
-    image:
-      "https://shopping-phinf.pstatic.net/main_3249290/32492906847.20231003084704.jpg",
-    author: "구병모^권지예^김봄^김서령^김연희",
-    discount: "10800",
-    publisher: "걷는사람",
-    pubdate: "20181115",
-    isbn: "9791189128197",
-    description: `이것은 단지 동물의 이야기가 아니다!
-
-독자들과의 폭넓은 소통을 염두에 두고 초단편으로 구성된 작가들의 개성적인 손바닥소설(초엽편소설)과 에세이를 두루 만날 수 있는 산문집 시리즈 「짧아도 괜찮아」 제4권 『무민은 채식주의자』. 일상의 짧은 순간순간 휴식처럼, 때로는 사색처럼 책을 즐길 수 있도록 구성되었다. 
-
-『무민은 채식주의자』는 '동물권'을 테마로 한 손바닥소설집으로 구병모, 권지예, 김봄, 김서령, 김연희, 김은, 박상영, 위수정, 이순원, 이장욱, 이주란, 정세랑, 최정화, 태기수, 하명희, 황현진 등 현재 우리 문학장에서 활발한 활동을 펼치는 동시에 생명에 대한 각별한 애정을 지닌 소설가들이 적극 참여했다. 
-
-동물의 권리를 생각하는 일, 우리 안의 야만성, 잔혹성, 폭력성을 아프게 직시하는 일은 우리가 더 나은 삶을 살기 위해서라도 반드시 필요한 과정이 아닐 수 없다. 이 책에 등장하는 동물들은 다양한 모습으로 우리 앞에 모습을 드러낸다. 그로써 자신들이 처한 적나라한 현실을 고발한다.`,
-  },
-  {
-    title: "불완전 채식주의자 (입맛과 신념 사이에서 써 내려간 비거니즘 지향기)",
-    link: "https://search.shopping.naver.com/book/catalog/32443142048",
-    image:
-      "https://shopping-phinf.pstatic.net/main_3244314/32443142048.20221019124632.jpg",
-    author: "정진아",
-    discount: "13050",
-    publisher: "허밍버드",
-    pubdate: "20220512",
-    isbn: "9788968333750",
-    description: `"세상에는 한 명의 완전 채식주의자보다
-열 명의 불완전 채식주의자가 더 필요하다!!"
-
-삶을 평화적으로 확장해 나가는 비거니즘 이야기
-
-채식은 어렵고, 부담스럽다. 먹어본 맛이 무섭다고 도저히 고기를 끊을 수 있을 것 같지 않다. 하지만 착취당하고 고통받는 동물들의 삶을 들여다보며 '나도 채식을 시도해 보고 싶다'고 생각하는 사람들이 점점 늘고 있는 추세다. 이제 채식은 단순히 건강을 위해 채소를 섭취하는 일이 아니다. 인간으로서 할 수 있는 윤리이자, 지구의 경고에 대응하는 일이며, 다른 생명이 인간과 똑같이 존중받길 바라는 고귀한 마음가짐이다.
-
-삼겹살에 소주가 최고의 힐링이었던, 부정할 수 없는 '육식주의자'였던 저자는 이십 대 중반의 어느 날, 고기를 끊기로 다짐했다. 동물 학대와 전 세계 지구온난화의 원인이 되는 공장식 축산업의 실태를 자세히 알게 된 이후였다. 그러나 10년이 지난 지금 결과적으로는 실패했고, 그럼에도 여전히 실패와 도전을 반복하는 중이다.
-
-《불완전 채식주의자》는 동물자유연대 활동가인 정진아 작가가 '입맛과 신념 사이'에서 치열하게 고민하며 써 내려간 비거니즘 에세이다. 채소보단 육류를 훨씬 좋아했지만 더 이상은 동물의 고통을 외면할 수 없어 채식을 결심한 사람, 그러나 '완전 채식'의 꿈을 이루지 못하고 수차례 실패하고 또 도전하는 사람. 저자는 자신처럼 본능과 이상의 충돌로 괴로워하는, 그러면서도 계속 포기하지 않는 사람들을 향해 이 완벽하지 않은 행동을 함께해 나가자고 손을 내민다. 인간과 동물의 새로운 관계 맺기에 작게나마 보탬이 되길 바라며.`,
-  },
-  {
-    title: "한강 채식주의자 다시 읽기 (외설인가 예술인가)",
-    link: "https://search.shopping.naver.com/book/catalog/51486629632",
-    image:
-      "https://shopping-phinf.pstatic.net/main_5148662/51486629632.20241122071441.jpg",
-    author: "양관수",
-    discount: "17100",
-    publisher: "계간문예",
-    pubdate: "20241101",
-    isbn: "9788965543077",
-    description: `2024년 노벨문학상 수상
-소설가 한강의 《채식주의자》랑 떠나는
-양관수의 독서여행
-
-언젠가 딸이 내게 물었다.
-좋은 소설이나 영화에는 왜 야한 장면들이 많이 나와?
-그때 나는 뭐라 말하지 못했다.
-이 책이 그 질문에 좋은 답이면 보람되리라.
-
-작가는 무엇을 쓰지 않는다. 어떻게 쓰는 쪽에 창작의 절대적 가치를 두는 것이 작가의 올곧은 입장이리라. 그것은 자기만의 언어야 하고 비로소 Aura가 존재할 것이다. 이러한 바라보기로 《채식주의자》를 관조해야 한다.`,
-  },
-  {
-    title: "채식주의자의 식탁 (이기성 시집)",
-    link: "https://search.shopping.naver.com/book/catalog/32489622813",
-    image:
-      "https://shopping-phinf.pstatic.net/main_3248962/32489622813.20220530154017.jpg",
-    author: "이기성",
-    discount: "29800",
-    publisher: "문학과지성사",
-    pubdate: "20150715",
-    isbn: "9788932027654",
-    description: `등단 17년차를 맞는 시인 이기성의 세 번째 시집.
-
-이기성의 세번째 시집 『채식주의자의 식탁』. 이번 시집에는 2015년 현대문학상 수상작인 「굴 소년의 노래」를 비롯한 55편의 시가 수록되어 있다. 올해로 등단 17년차를 맞는 시인은 이번 시집에서 좀더 원숙한 시선으로 파편적이고 익명화된 존재에서 벗어나지 못한 채 살아가는 생의 풍경을 바라본다. 그 시선 안에서 결핍의 영토를 떠도는 우울과 슬픔, 비애와 무기력 등의 감정이 구조화된다.`,
-  },
-  {
-    title:
-      "해방촌의 채식주의자 (휘뚜루마뚜루 자유롭게 산다는 것 | 전범선 산문집)",
-    link: "https://search.shopping.naver.com/book/catalog/32466839152",
-    image:
-      "https://shopping-phinf.pstatic.net/main_3246683/32466839152.20230704084126.jpg",
-    author: "전범선",
-    discount: "12420",
-    publisher: "한겨레출판사",
-    pubdate: "20201127",
-    isbn: "9791160404449",
-    description: `로스쿨 대신 로큰롤, 옥스퍼드 대신 해방촌…
-"눈치 보지 않으니, 할 수 있는 게 많다. 
-나는 지금 충분히 행복하고, 적당히 불안하다."`,
-  },
-];
-
-export default function GardenPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState<BookItem[]>([]); // State for book items
-  const [isLoading, setIsLoading] = useState(false); // Loading state
-  const [hasSearched, setHasSearched] = useState(false); // Track if a search has been performed
-
-  const handleSearch = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // No need to search if already loading or search term is empty
-    if (isLoading || !searchTerm.trim()) return;
+  const handleSearch = async (e?: React.FormEvent<HTMLFormElement>) => {
+    if (e) e.preventDefault(); // Prevent form submission page reload
+    if (!searchQuery.trim()) return; // Don't search if query is empty
 
     setIsLoading(true);
-    setSearchResults([]); // Clear previous results immediately
-    setHasSearched(true); // Mark that a search attempt has been made
+    setSearchResults([]); // Clear previous results
 
-    // Simulate API call delay
-    await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Always display sample books after clicking search, regardless of actual API call success/failure
-    setSearchResults(sampleBooks);
-    setIsLoading(false);
-
-    // Optional: Keep the API call logic if needed for other purposes, but ignore its results for display
-    /*
+    // Simulate API call
+    // In a real app, you would fetch from an API endpoint:
+    // const response = await fetch(`/api/search?query=${encodeURIComponent(searchQuery)}`);
+    // const data = await response.json();
+    // For now, use mock data if the query matches "채식주의자"
     try {
-      const response = await fetch(
-        `https://book-server-roan.vercel.app/books/${encodeURIComponent(
-          searchTerm
-        )}`
-      );
-      if (!response.ok) {
-        // Even if fetch fails, we still show sample books
-        console.error(`HTTP error! status: ${response.status}`);
-        // throw new Error(`HTTP error! status: ${response.status}`);
+      if (searchQuery.trim().toLowerCase() === "채식주의자") {
+        // Limit results to 5-6 as requested
+        const resultsToShow = mockSearchResults.items.slice(0, 6);
+        setSearchResults(resultsToShow);
+
+        // Add to recent searches (simple implementation)
+        if (!recentSearches.includes(searchQuery)) {
+          setRecentSearches(
+            [searchQuery, ...recentSearches].slice(0, 5) // Keep only last 5
+          );
+        }
+      } else {
+        // Handle cases where mock data doesn't match or no results
+        setSearchResults([]);
+        console.log(
+          "Mock data only available for '채식주의자'. No results for:",
+          searchQuery
+        );
       }
-      // const data: ApiResponse = await response.json();
-      // setSearchResults(data.items || []); // We are ignoring the actual results
-    } catch (e) {
-      console.error("Search failed:", e);
-      // setError(e instanceof Error ? e.message : "An unknown error occurred."); // Don't show error if we display sample data
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setSearchResults([]); // Ensure results are cleared on error
     } finally {
-       // Set sample data and loading state regardless of try/catch outcome
-       setSearchResults(sampleBooks);
-       setIsLoading(false);
+      setIsLoading(false);
     }
-    */
+  };
+
+  // Function to handle deleting a recent search term
+  const handleDeleteRecentSearch = (indexToDelete: number) => {
+    setRecentSearches((prevSearches) =>
+      prevSearches.filter((_, index) => index !== indexToDelete)
+    );
   };
 
   return (
-    <div className="w-full px-4 py-6 space-y-6">
-      {/* Search Input Card */}
-      <div className="w-full bg-white p-6 rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
-        <div className="max-w-[680px] mx-auto">
-          <h2 className="font-sans text-xl font-semibold text-gray-800 mb-4">
-            Search Books
-          </h2>
-          <form onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder="Enter book title or author..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cyan-500"
-            />
-            <button
-              type="submit"
-              disabled={isLoading} // Disable button while loading
-              className="mt-4 px-4 py-2 bg-cyan-500 text-white rounded-md hover:bg-cyan-600 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? "Searching..." : "Search"}
-            </button>
-          </form>
-        </div>
-      </div>
+    <div className="min-h-screen bg-black text-white p-4 flex flex-col pt-12">
+      <div className="max-w-[680px] mx-auto w-full flex-grow">
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="mb-8">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="책 제목, 저자 등을 검색해보세요..."
+            className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base"
+          />
+          {/* Add a search button if needed, or rely on Enter key */}
+          {/* <button type="submit" className="mt-2 p-2 bg-blue-600 rounded">Search</button> */}
+        </form>
 
-      {/* Search Results Card */}
-      <div className="w-full bg-white p-6 rounded-lg shadow-[0_4px_8px_rgba(0,0,0,0.1)]">
-        <div className="max-w-[680px] mx-auto">
-          <h2 className="font-sans text-xl font-semibold text-gray-800 mb-4">
-            Results
-          </h2>
-          {isLoading && <p className="text-gray-500">Loading results...</p>}
-          {/* Remove error display if we always show sample data 
-          {error && <p className="text-red-500">Error: {error}</p>} 
-          */}
-          {!isLoading && (
-            <>
-              {" "}
-              {/* Use Fragment to group conditional rendering */}
-              {searchResults.length > 0 ? (
-                <ul className="space-y-4">
-                  {searchResults.map((book) => (
-                    <li
-                      key={book.isbn} // Use ISBN as key
-                      className="flex items-start space-x-4 border-b pb-4 last:border-b-0"
+        {/* Loading Indicator */}
+        {isLoading && (
+          <div className="text-center text-gray-400">검색 중...</div>
+        )}
+
+        {/* Conditional Display: Recent Searches or Search Results */}
+        {!isLoading && searchResults.length === 0 && (
+          <div>
+            <h2 className="text-xl font-semibold mb-4 text-gray-300">
+              최근 검색어
+            </h2>
+            {recentSearches.length > 0 ? (
+              <ul className="space-y-2">
+                {recentSearches.map((term, index) => (
+                  <li
+                    key={index}
+                    className="flex justify-between items-center text-gray-400 hover:text-white group text-base"
+                  >
+                    <span
+                      className="cursor-pointer group-hover:text-blue-400"
+                      onClick={() => {
+                        setSearchQuery(term);
+                        // handleSearch(); // Optionally trigger search on click
+                      }}
                     >
-                      <img
+                      {term}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent li's onClick if it exists
+                        handleDeleteRecentSearch(index);
+                      }}
+                      className="text-xs text-gray-500 hover:text-blue-400 ml-2 px-1 rounded"
+                      aria-label={`Remove ${term} from recent searches`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-base text-gray-500">
+                최근 검색 기록이 없습니다.
+              </p>
+            )}
+          </div>
+        )}
+
+        {!isLoading && searchResults.length > 0 && (
+          <div>
+            <h2 className="text-xl font-semibold mb-4 text-gray-300">
+              검색 결과
+            </h2>
+            <ul className="space-y-4">
+              {searchResults.map((book, index) => (
+                <li
+                  key={book.isbn || index} // Use ISBN as key if available
+                  className="flex items-start space-x-4 p-3 bg-gray-900 rounded-lg border border-gray-700"
+                >
+                  <div className="flex-shrink-0">
+                    {book.image && (
+                      <Image
                         src={book.image}
-                        alt={book.title}
-                        width={60} // Standard img attribute
-                        height={90} // Standard img attribute
-                        className="rounded object-cover shadow-sm flex-shrink-0 mt-1"
-                        loading="lazy" // Added lazy loading for standard img
+                        alt={`Cover of ${book.title}`}
+                        width={80} // Adjust size as needed
+                        height={120} // Adjust size as needed
+                        className="object-cover rounded"
+                        unoptimized // If using external images without loader config
                       />
-                      <div className="flex-grow">
-                        <Link href="/garden/vegan">
-                          <h3 className="font-semibold text-lg text-gray-800 cursor-pointer hover:underline">
-                            {book.title}
-                          </h3>
-                        </Link>
-                        <p className="text-sm text-gray-600">
-                          {book.author} | {book.publisher} ({book.pubdate})
-                        </p>
-                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">
-                          {book.description || "No description available."}
-                        </p>
-                        {/* Optional: Link to Naver Shopping */}
-                        {/* <a href={book.link} target="_blank" rel="noopener noreferrer" className="text-xs text-cyan-600 hover:underline">View on Naver Shopping</a> */}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-500">
-                  {hasSearched
-                    ? "Loading initial results..." // Updated message while loading sample data
-                    : "Search results will appear here."}
-                </p>
-              )}
-            </>
-          )}
-        </div>
+                    )}
+                  </div>
+                  <div className="flex-grow">
+                    <Link href="/garden/vegan" passHref legacyBehavior>
+                      <a className="text-xl font-semibold text-blue-400 hover:underline">
+                        {/* Basic HTML entity removal for display */}
+                        {book.title.replace(/<\/?b>/g, "")}
+                      </a>
+                    </Link>
+                    <p className="text-base text-gray-400 mt-1">
+                      저자: {book.author.replace(/<\/?b>/g, "")} | 출판사:{" "}
+                      {book.publisher}
+                    </p>
+                    <p className="text-base text-gray-500 mt-1">
+                      출판일: {book.pubdate}
+                    </p>
+                    <p className="text-base text-gray-300 mt-2 line-clamp-3">
+                      {book.description.replace(/<\/?b>/g, "")}
+                    </p>
+                    {/* Display price/discount if needed */}
+                    {/* <p className="text-sm text-green-400 mt-1">가격: {book.discount}원</p> */}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {/* Add some bottom padding to prevent content from sticking to the very bottom */}
+        <div className="pb-16"></div>
       </div>
     </div>
   );
-}
+};
+
+export default GardenPage;

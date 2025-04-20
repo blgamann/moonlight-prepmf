@@ -4,6 +4,7 @@ import { useState } from "react"; // Import useState
 import UserInfoSection from "./UserInfoSection"; // Import the new component
 import AnswerSection from "./AnswerSection"; // Import the new component
 import UserRelationSection from "./UserRelationSection"; // Import the new combined section component
+import BookInfo from "./BookInfo"; // Import BookInfo
 
 // --- Define Interfaces for Data Structures ---
 interface UserProfile {
@@ -269,6 +270,13 @@ export default function DiscoverPage() {
   // State for current article index within the current user's magazine
   const [currentArticleIndex, setCurrentArticleIndex] = useState(0);
 
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+
   const totalUsers = allUserMagazines.length;
   const currentUserMagazine = allUserMagazines[currentUserIndex];
   const totalArticles = currentUserMagazine.magazineData.length;
@@ -323,21 +331,42 @@ export default function DiscoverPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 flex flex-col pt-12 relative">
+    <div className="min-h-screen bg-black text-white flex flex-col relative">
       {/* Main Content Area */}
       <div className="max-w-[680px] mx-auto w-full flex-grow">
+        {/* Display Today's Date and Country Flag */}
+        <div className="sticky top-0 bg-black py-4 border-b border-gray-700 z-10 flex justify-center items-center">
+          <span className="text-lg text-center text-gray-400">
+            {formattedDate}
+          </span>
+          {/* <span className="text-2xl">🇰🇷</span> */}
+        </div>
+
         {/* Pass current user's data */}
-        <UserInfoSection
-          user={currentUserData}
-          booksReadCount={currentBooksReadCount}
-        />
+        <div className="pt-12">
+          <UserInfoSection
+            user={currentUserData}
+            booksReadCount={currentBooksReadCount}
+          />
+        </div>
 
         {/* Use the AnswerSection component with current user's article data */}
         <AnswerSection
           answer={currentArticle.answer}
-          question={currentArticle.question}
-          book={currentArticle.book}
+          // question={currentArticle.question} // Remove question prop
         />
+
+        {/* Context Area (Question & Book) - Recreated here */}
+        <div className="flex items-start space-x-6 border-t border-gray-700 pt-6">
+          {/* Left: Context Text (Question only) */}
+          <div className="flex flex-col flex-grow pt-1">
+            <p className="text-base text-gray-300">
+              {currentArticle.question.question_text}
+            </p>
+          </div>
+          {/* Right: Book Cover and Info */}
+          <BookInfo book={currentArticle.book} />
+        </div>
 
         {/* Article Navigation */}
         <div className="flex justify-between items-center mt-6">
@@ -346,7 +375,7 @@ export default function DiscoverPage() {
             className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50"
             disabled={totalArticles <= 1} // Disable if only one article
           >
-            이전 글
+            이전 답변
           </button>
           <span className="text-sm text-gray-400">
             {totalArticles > 0 ? currentArticleIndex + 1 : 0} / {totalArticles}
@@ -356,7 +385,7 @@ export default function DiscoverPage() {
             className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50"
             disabled={totalArticles <= 1} // Disable if only one article
           >
-            다음 글
+            다음 답변
           </button>
         </div>
 
@@ -373,22 +402,22 @@ export default function DiscoverPage() {
       </div>
 
       {/* Re-add Sticky Footer for User Navigation */}
-      <div className="sticky bottom-0 left-0 right-0 pb-4 pt-2 bg-black bg-opacity-80 backdrop-blur-sm z-40">
+      <div className="sticky bottom-0 left-0 right-0 py-6 bg-black bg-opacity-80 backdrop-blur-sm z-40 border-t border-gray-700">
         <div className="max-w-[680px] mx-auto flex justify-between items-center px-4">
           <button
             onClick={handlePreviousUser}
             className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 text-white text-sm"
           >
-            다른 사용자 (이전)
+            이전 프로필
           </button>
-          <span className="text-xs text-gray-400">
-            사용자 {currentUserIndex + 1} / {totalUsers}
+          <span className="text-base text-gray-400">
+            프로필 {currentUserIndex + 1} / {totalUsers}
           </span>
           <button
             onClick={handleNextUser}
             className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 text-white text-sm"
           >
-            다른 사용자 (다음)
+            다음 프로필
           </button>
         </div>
       </div>
