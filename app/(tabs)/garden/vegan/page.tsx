@@ -60,13 +60,14 @@ const ProfileListModal = ({
         <ul className="space-y-3 max-h-60 overflow-y-auto">
           {profiles.map((profile) => (
             <li key={profile.id} className="flex items-center">
-              <Image
-                src={profile.imageUrl}
-                alt={profile.name}
-                width={32}
-                height={32}
-                className="rounded-full mr-3"
-              />
+              <div className="relative w-8 h-8 mr-3">
+                <Image
+                  src={profile.imageUrl}
+                  alt={profile.name}
+                  fill={true}
+                  className="rounded-full object-cover"
+                />
+              </div>
               <span className="text-base text-gray-300">{profile.name}</span>
             </li>
           ))}

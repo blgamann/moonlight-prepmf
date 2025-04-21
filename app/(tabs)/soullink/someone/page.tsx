@@ -217,13 +217,14 @@ export default function SomeonePage() {
       <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-sm border-b border-gray-700 p-4 flex items-center justify-center space-x-3">
         {/* Profile Picture using data from JSON */}
         {profile ? (
-          <Image
-            src={profile.imageUrl}
-            alt={`${profile.name} Profile Picture`}
-            width={32}
-            height={32}
-            className="rounded-full"
-          />
+          <div className="relative w-8 h-8">
+            <Image
+              src={profile.imageUrl}
+              alt={`${profile.name} Profile Picture`}
+              fill={true}
+              className="rounded-full object-cover"
+            />
+          </div>
         ) : (
           // Fallback placeholder if profile not found
           <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center text-white text-sm">

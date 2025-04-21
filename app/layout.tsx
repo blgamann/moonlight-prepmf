@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
-import BottomTab from "@/components/app/bottom-tab";
-import CollapsedSidebar from "@/components/app/collapsed-sidebar";
-import ExpandedSidebar from "@/components/app/expanded-sidebar";
+import LayoutClient from "@/components/app/layout-client";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,16 +17,7 @@ export default function RootLayout({
     <html lang="ko" className="bg-white">
       <body>
         <ClerkProvider>
-          <BottomTab />
-          <div className="hidden md:block xl:hidden">
-            <CollapsedSidebar />
-          </div>
-          <div className="hidden xl:block">
-            <ExpandedSidebar />
-          </div>
-          <main className="pb-[60px] md:pb-0 md:pl-[72px] xl:pl-[336px]">
-            {children}
-          </main>
+          <LayoutClient>{children}</LayoutClient>
         </ClerkProvider>
       </body>
     </html>

@@ -158,7 +158,7 @@ const SoulLinkPage = () => {
             <Image
               src={profile.imageUrl}
               alt={profile.name}
-              layout="fill"
+              fill={true}
               className="rounded-full object-cover"
               unoptimized
             />
@@ -210,7 +210,7 @@ const SoulLinkPage = () => {
                 <Image
                   src={profile.imageUrl}
                   alt={profile.name}
-                  layout="fill"
+                  fill={true}
                   className="rounded-full object-cover border-2 border-gray-700"
                   unoptimized
                 />

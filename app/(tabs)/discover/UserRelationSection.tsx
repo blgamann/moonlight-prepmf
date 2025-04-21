@@ -89,13 +89,14 @@ const UserRelationSection: React.FC<UserRelationSectionProps> = ({
           <div className="flex items-center justify-center space-x-2 sm:space-x-4 overflow-x-auto pb-2">
             {/* Viewing User */}
             <div className="flex flex-col items-center text-center flex-shrink-0 w-16 sm:w-20">
-              <Image
-                src={viewingUser.imageUrl}
-                alt={viewingUser.name}
-                width={48}
-                height={48}
-                className="rounded-full border-2 border-blue-500"
-              />
+              <div className="relative w-12 h-12 mb-1">
+                <Image
+                  src={viewingUser.imageUrl}
+                  alt={viewingUser.name}
+                  fill={true}
+                  className="rounded-full border-2 border-blue-500 object-cover"
+                />
+              </div>
               <span className="mt-1 text-xs truncate w-full">
                 {viewingUser.name} (나)
               </span>
@@ -108,13 +109,14 @@ const UserRelationSection: React.FC<UserRelationSectionProps> = ({
                     →
                   </div>
                   <div className="flex flex-col items-center text-center flex-shrink-0 w-16 sm:w-20">
-                    <Image
-                      src={user.imageUrl}
-                      alt={user.name}
-                      width={48}
-                      height={48}
-                      className="rounded-full border-2 border-gray-500"
-                    />
+                    <div className="relative w-12 h-12 mb-1">
+                      <Image
+                        src={user.imageUrl}
+                        alt={user.name}
+                        fill={true}
+                        className="rounded-full border-2 border-gray-500 object-cover"
+                      />
+                    </div>
                     <span className="mt-1 text-xs truncate w-full">
                       {user.name}
                     </span>
@@ -130,13 +132,14 @@ const UserRelationSection: React.FC<UserRelationSectionProps> = ({
 
             {/* Target User - Could be real or dummy */}
             <div className="flex flex-col items-center text-center flex-shrink-0 w-16 sm:w-20">
-              <Image
-                src={targetUser.imageUrl} // Uses potentially overridden targetUser
-                alt={targetUser.name} // Uses potentially overridden targetUser
-                width={48}
-                height={48}
-                className="rounded-full border-2 border-green-500"
-              />
+              <div className="relative w-12 h-12 mb-1">
+                <Image
+                  src={targetUser.imageUrl} // Uses potentially overridden targetUser
+                  alt={targetUser.name} // Uses potentially overridden targetUser
+                  fill={true}
+                  className="rounded-full border-2 border-green-500 object-cover"
+                />
+              </div>
               <span className="mt-1 text-xs truncate w-full">
                 {targetUser.name}
               </span>

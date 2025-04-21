@@ -21,14 +21,15 @@ export default function UserInfoSection({
   return (
     <section className="mb-8">
       <div className="flex items-center space-x-4">
-        {/* Profile Image */}
-        <Image
-          src={user.imageUrl}
-          alt={`${user.name}'s profile picture`}
-          width={96}
-          height={96}
-          className="rounded-full flex-shrink-0"
-        />
+        {/* Profile Image - Updated with container */}
+        <div className="relative w-24 h-24 flex-shrink-0">
+          <Image
+            src={user.imageUrl}
+            alt={`${user.name}'s profile picture`}
+            fill={true}
+            className="rounded-full object-cover"
+          />
+        </div>
         {/* Text Content - Allow it to grow and align items within */}
         <div className="flex flex-col pt-1 flex-grow">
           {/* Name - Make interactive */}

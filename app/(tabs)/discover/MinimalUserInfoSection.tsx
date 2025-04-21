@@ -23,13 +23,14 @@ export default function MinimalUserInfoSection({
         {" "}
         {/* Reduced space */}
         {/* Profile Image */}
-        <Image
-          src={user.imageUrl}
-          alt={`${user.name}'s profile picture`}
-          width={40} // Smaller image
-          height={40} // Smaller image
-          className="rounded-full flex-shrink-0"
-        />
+        <div className="relative w-10 h-10 flex-shrink-0">
+          <Image
+            src={user.imageUrl}
+            alt={`${user.name}'s profile picture`}
+            fill={true}
+            className="rounded-full object-cover"
+          />
+        </div>
         {/* Text Content */}
         <div className="flex flex-col">
           {/* Name */}

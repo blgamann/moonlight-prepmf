@@ -18,14 +18,14 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (req.nextUrl.pathname === "/") {
-    const discoverUrl = new URL("/discover", req.url);
-    return NextResponse.redirect(discoverUrl);
-  }
+  // if (req.nextUrl.pathname === "/") {
+  //   const discoverUrl = new URL("/discover", req.url);
+  //   return NextResponse.redirect(discoverUrl);
+  // }
 
-  if (!isPublicRoute(req)) {
-    auth.protect();
-  }
+  // if (!isPublicRoute(req)) {
+  //   auth.protect();
+  // }
 });
 
 export const config = {
