@@ -1,6 +1,13 @@
 "use client";
 
-import { Bell, Sparkles, Activity, BookOpen, UserRound, Library } from "lucide-react";
+import {
+  Bell,
+  Sparkles,
+  Activity,
+  BookOpen,
+  UserRound,
+  Library,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,10 +20,16 @@ export default function CollapsedSidebar() {
   };
 
   return (
-    <aside className="w-[72px] bg-[#111] border-r border-white/10 flex flex-col items-center pt-8 fixed h-screen z-10">
+    <aside className="w-[72px] bg-zinc-950 border-r border-white/30 flex flex-col items-center pt-8 fixed h-screen z-10">
       <div className="mb-20">
         <Link href="/discover">
-          <Image src="/logo.svg" alt="moonlight Logo" width={30} height={30} />
+          <Image src="/logo.png" alt="moonlight Logo" width={30} height={30} />
+          {/* <span className="font-['Nunito'] text-[#38d4e7] text-[1.5rem] font-bold tracking-[-0.2px]">
+            m
+          </span> */}
+          {/* <span className="font-['GurmukhiMN'] text-[#38d4e7] text-[1.5rem] tracking-[-0.2px]">
+            m
+          </span> */}
         </Link>
       </div>
       <div className="flex flex-col gap-12 items-center">
@@ -90,7 +103,7 @@ export default function CollapsedSidebar() {
                 : "group-hover:stroke-white"
             }`}
           />
-          <span className="absolute -top-[2px] -right-[2px] w-[6px] h-[6px] bg-[#ff6b6b] rounded-full"></span>
+          <span className="absolute -top-[2px] -right-[2px] w-[6px] h-[6px] bg-[#6ABECF] rounded-full"></span>
           <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-[#222] text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
             알림
           </div>
@@ -128,7 +141,7 @@ export default function CollapsedSidebar() {
             }`}
           />
           <div className="absolute left-[calc(100%+12px)] top-1/2 -translate-y-1/2 bg-[#222] text-white text-xs py-1 px-2 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-            나의 모음
+            나의 관심
           </div>
         </Link>
       </div>

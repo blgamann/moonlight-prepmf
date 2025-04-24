@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import LayoutClient from "@/components/app/layout-client";
+import { helvetica } from "./fonts";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className="bg-white">
-      <body>
+    <html lang="ko" className={`bg-white ${helvetica.variable}`}>
+      <body className={helvetica.className}>
         <ClerkProvider>
           <LayoutClient>{children}</LayoutClient>
         </ClerkProvider>

@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 
 // --- Interfaces (copied from page.tsx or defined locally if preferred) ---
 interface UserProfile {
@@ -74,75 +75,86 @@ const UserRelationSection: React.FC<UserRelationSectionProps> = ({
 
   return (
     // Main container for the combined section
-    <div className="mt-8 px-4 py-4 border border-gray-700 rounded-lg bg-gray-900 mb-12">
+    <div className="mt-12 p-6 border border-white/10 rounded-md bg-white/5 mb-16 shadow-lg">
       {/* --- Connection Path Sub-section --- */}
       {hasConnection && connectionInfo && (
         <div
-          className={hasCommonBooks ? "pb-4 mb-4 border-b border-gray-700" : ""}
+          className={hasCommonBooks ? "pb-4 mb-4 border-b border-white/10" : ""}
         >
           {/* Modify title for dummy data case */}
-          <h3 className="text-sm font-semibold text-gray-400 mb-4">
-            {isOwnProfile && connectionInfo.degree === 1
-              ? `${viewingUser.name}님과 ${targetUser.name}님은 ${connectionInfo.degree}촌 관계입니다. (예시)`
-              : `${viewingUser.name}님과 ${targetUser.name}님은 ${connectionInfo.degree}촌 관계입니다.`}
+          <h3 className="text-base text-white/85 mb-8">
+            {viewingUser.name}님과 {targetUser.name}님은{" "}
+            <strong className="text-[#6ABECF]">
+              {connectionInfo.degree}촌
+            </strong>{" "}
+            입니다.
+            {isOwnProfile && connectionInfo.degree === 1 && " (예시)"}
           </h3>
           <div className="flex items-center justify-center space-x-2 sm:space-x-4 overflow-x-auto pb-2">
             {/* Viewing User */}
-            <div className="flex flex-col items-center text-center flex-shrink-0 w-16 sm:w-20">
-              <div className="relative w-12 h-12 mb-1">
+            <div className="flex flex-col items-center text-center flex-shrink-0 w-20 sm:w-24">
+              <div className="relative w-16 h-16 mb-1">
                 <Image
                   src={viewingUser.imageUrl}
                   alt={viewingUser.name}
                   fill={true}
-                  className="rounded-full border-2 border-blue-500 object-cover"
+                  className="rounded-full border-2 border-[#6ABECF] object-cover"
                 />
               </div>
-              <span className="mt-1 text-xs truncate w-full">
+              <Link
+                href={`/profile/${viewingUser.profile_id}`}
+                className="mt-1 text-sm truncate text-white hover:underline"
+              >
                 {viewingUser.name} (나)
-              </span>
+              </Link>
             </div>
-            {/* Intermediate Users or Arrow for Degree 1 */}
-            {connectionInfo.path.length > 0 ? (
+            {/* Intermediate Users */}
+            {connectionInfo.path.length > 0 &&
               connectionInfo.path.map((user) => (
                 <React.Fragment key={user.profile_id}>
-                  <div className="text-gray-500 text-xl font-light flex-shrink-0 mx-1 sm:mx-2">
+                  <div className="text-white/85 text-xl font-light flex-shrink-0 mx-1 sm:mx-2">
                     →
                   </div>
-                  <div className="flex flex-col items-center text-center flex-shrink-0 w-16 sm:w-20">
-                    <div className="relative w-12 h-12 mb-1">
+                  <div className="flex flex-col items-center text-center flex-shrink-0 w-20 sm:w-24">
+                    <div className="relative w-16 h-16 mb-1">
                       <Image
                         src={user.imageUrl}
                         alt={user.name}
                         fill={true}
-                        className="rounded-full border-2 border-gray-500 object-cover"
+                        className="rounded-full border-2 border-[#6ABECF] object-cover"
                       />
                     </div>
-                    <span className="mt-1 text-xs truncate w-full">
+                    <Link
+                      href={`/profile/${user.profile_id}`}
+                      className="mt-1 text-sm truncate text-white hover:underline"
+                    >
                       {user.name}
-                    </span>
+                    </Link>
                   </div>
                 </React.Fragment>
-              ))
-            ) : (
-              // Show arrow directly for degree 1 connections (including dummy)
-              <div className="text-gray-500 text-xl font-light flex-shrink-0 mx-1 sm:mx-2">
-                →
-              </div>
-            )}
+              ))}
+
+            {/* Always show arrow before the target user */}
+            <div className="text-white/85 text-xl font-light flex-shrink-0 mx-1 sm:mx-2">
+              →
+            </div>
 
             {/* Target User - Could be real or dummy */}
-            <div className="flex flex-col items-center text-center flex-shrink-0 w-16 sm:w-20">
-              <div className="relative w-12 h-12 mb-1">
+            <div className="flex flex-col items-center text-center flex-shrink-0 w-20 sm:w-24">
+              <div className="relative w-16 h-16 mb-1">
                 <Image
                   src={targetUser.imageUrl} // Uses potentially overridden targetUser
                   alt={targetUser.name} // Uses potentially overridden targetUser
                   fill={true}
-                  className="rounded-full border-2 border-green-500 object-cover"
+                  className="rounded-full border-2 border-[#6ABECF] object-cover"
                 />
               </div>
-              <span className="mt-1 text-xs truncate w-full">
+              <Link
+                href={`/profile/${targetUser.profile_id}`}
+                className="mt-1 text-sm truncate text-white hover:underline"
+              >
                 {targetUser.name}
-              </span>
+              </Link>
             </div>
           </div>
         </div>
@@ -151,29 +163,28 @@ const UserRelationSection: React.FC<UserRelationSectionProps> = ({
       {/* --- Common Books Sub-section --- */}
       {hasCommonBooks && commonBooksInfo && (
         <div>
-          <h4 className="text-sm font-semibold text-gray-400 mb-4">
-            함께 읽은 책
-          </h4>
+          <h4 className="text-base text-white/85 mb-6">함께 읽은 책</h4>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-x-3 gap-y-4">
             {commonBooksInfo.books.map((book) => (
               <div
                 key={book.id}
                 className="flex flex-col items-center text-center"
               >
-                <div className="mb-1.5 flex-shrink-0">
+                <div className="mb-1.5 flex-shrink-0 relative w-16 h-24">
                   <Image
                     src={book.imageUrl}
                     alt={book.title}
-                    width={60}
-                    height={84}
-                    className="rounded object-cover shadow-md"
+                    fill={true}
+                    className="rounded shadow-md object-cover"
                     unoptimized
                   />
                 </div>
-                <p className="text-xs font-medium text-white leading-tight line-clamp-2 mb-0.5 w-full">
-                  {book.title}
+                <p className="text-sm font-semibold text-white/85 w-full">
+                  <Link href="/garden/vegan" className="hover:underline">
+                    {book.title}
+                  </Link>
                 </p>
-                <p className="text-[11px] text-gray-400 leading-tight line-clamp-1 w-full">
+                <p className="text-xs text-white/50 leading-tight line-clamp-1 w-full">
                   {book.author}
                 </p>
               </div>

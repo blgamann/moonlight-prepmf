@@ -8,7 +8,6 @@ import {
   UserRound,
   Library,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,16 +24,19 @@ export default function ExpandedSidebar() {
     { href: "/soullink", icon: Activity, label: "소울링크" },
     { href: "/notification", icon: Bell, label: "알림" },
     { href: "/profile", icon: UserRound, label: "프로필" },
-    { href: "/collection", icon: Library, label: "나의 모음" },
+    { href: "/collection", icon: Library, label: "나의 관심" },
   ];
 
   return (
-    <aside className="w-[336px] bg-[#111] border-r border-white/10 flex flex-col pt-8 fixed h-screen z-10 px-6">
+    <aside className="w-[336px] bg-zinc-950 border-r border-white/30 flex flex-col pt-8 fixed h-screen z-10 px-6">
       <div className="mb-20 pl-2">
         {/* Consider using a larger or different logo version for expanded state */}
         <Link href="/discover" className="flex items-center gap-2">
-          <Image src="/logo.svg" alt="moonlight Logo" width={38} height={38} />
-          <span className="font-['Nunito'] text-[#6dd1e4] text-[1.5rem] font-bold tracking-[-0.2px]">
+          {/* <Image src="/logo.svg" alt="moonlight Logo" width={38} height={38} /> */}
+          {/* <span className="font-['Nunito'] text-[#38d4e7] text-[1.5rem] font-bold tracking-[-0.2px]">
+            moonlight
+          </span> */}
+          <span className="font-['GurmukhiMN'] text-[#38d4e7] text-[1.5rem] tracking-[-0.2px]">
             moonlight
           </span>
         </Link>
@@ -60,7 +62,7 @@ export default function ExpandedSidebar() {
               />
               <span className="text-lg font-medium flex-1">{item.label}</span>
               {item.href === "/notification" && (
-                <span className="w-[8px] h-[8px] bg-[#ff6b6b] rounded-full mr-1"></span>
+                <span className="w-[8px] h-[8px] bg-[#6ABECF] rounded-full mr-1"></span>
               )}
             </Link>
           );

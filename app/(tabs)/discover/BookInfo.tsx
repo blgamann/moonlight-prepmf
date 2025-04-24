@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 // Define data shapes for props
 interface Book {
@@ -27,8 +28,12 @@ export default function BookInfo({ book }: BookInfoProps) {
       />
       {/* Book Info */}
       <div className="mt-2 text-center">
-        <p className="text-sm font-semibold text-gray-300">{book.title}</p>
-        <p className="text-xs text-gray-500">{book.author}</p>
+        <p className="text-sm font-semibold text-white/85">
+          <Link href="/garden/vegan" className="hover:underline">
+            {book.title}
+          </Link>
+        </p>
+        <p className="text-xs text-white/50">{book.author}</p>
       </div>
     </div>
   );

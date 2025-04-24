@@ -108,22 +108,35 @@ const SoulLinkPage = () => {
   };
 
   // Filter requests based on current user
-  const sentRequests = requests.filter(
+  const sentPendingRequests = requests.filter(
     (req) => req.senderProfileId === currentUserId && req.status === "pending"
   );
-  const receivedRequests = requests.filter(
+  const receivedPendingRequests = requests.filter(
     (req) => req.receiverProfileId === currentUserId && req.status === "pending"
   );
+  /*
   const thinkingRequests = requests.filter(
     (req) =>
       req.receiverProfileId === currentUserId && req.status === "thinking"
   );
+  */
+
+  // Find mutually interested profiles (both sent a pending request to each other)
+  const mutuallyInterestedProfileIds = sentPendingRequests
+    .map((sentReq) => sentReq.receiverProfileId)
+    .filter((receiverId) =>
+      receivedPendingRequests.some(
+        (receivedReq) => receivedReq.senderProfileId === receiverId
+      )
+    );
 
   // Placeholder action handlers
+  /*
   const handleCancelRequest = (requestId: string) => {
     console.log(`Canceling request: ${requestId}`);
     setRequests(requests.filter((req) => req.id !== requestId));
   };
+  */
 
   const handleAcceptRequest = (requestId: string) => {
     console.log(`Accepting request: ${requestId}`);
@@ -131,13 +144,30 @@ const SoulLinkPage = () => {
     setRequests(requests.filter((req) => req.id !== requestId)); // Remove from pending list
   };
 
-  const handleDeferRequest = (requestId: string) => {
-    console.log(`Deferring request: ${requestId}`);
-    setRequests(
-      requests.map((req) =>
-        req.id === requestId ? { ...req, status: "thinking" } : req
-      )
+  // Placeholder for sending Soul Link (mutual interest)
+  const handleSendSoulLink = (profileId: string) => {
+    console.log(`Sending Soul Link to profile: ${profileId}`);
+    // Find the two requests involved (A->B and B->A)
+    const requestFromCurrentUser = requests.find(
+      (req) =>
+        req.senderProfileId === currentUserId &&
+        req.receiverProfileId === profileId &&
+        req.status === "pending"
     );
+    const requestToCurrentUser = requests.find(
+      (req) =>
+        req.senderProfileId === profileId &&
+        req.receiverProfileId === currentUserId &&
+        req.status === "pending"
+    );
+
+    // In a real app, you'd update both requests to 'linked' or create a new 'link' record.
+    // For this example, just remove both pending requests.
+    const requestsToRemove = [
+      requestFromCurrentUser?.id,
+      requestToCurrentUser?.id,
+    ].filter((id) => !!id) as string[];
+    setRequests(requests.filter((req) => !requestsToRemove.includes(req.id)));
   };
 
   const renderProfileItem = (
@@ -145,13 +175,13 @@ const SoulLinkPage = () => {
     requestDate: string,
     actions?: React.ReactNode
   ) => {
-    const daysPassed = calculateDaysPassed(requestDate);
-    const timeElapsedText = daysPassed === 0 ? "오늘" : `${daysPassed}일 경과`;
+    const daysPassed = requestDate ? calculateDaysPassed(requestDate) : 0; // Calculate only if dateString is not empty
+    const timeElapsedText = daysPassed > 0 ? `${daysPassed}일 경과` : ""; // Only show if > 0 days passed
 
     return (
       <li
         key={profile.id}
-        className="flex items-center justify-between p-3 bg-gray-900 rounded-lg border border-gray-700"
+        className="flex items-center justify-between p-4 bg-white/5 rounded-md border border-white/10"
       >
         <div className="flex items-center space-x-4">
           <div className="w-12 h-12 relative flex-shrink-0">
@@ -164,10 +194,13 @@ const SoulLinkPage = () => {
             />
           </div>
           <div>
-            <p className="text-base font-medium text-gray-100">
+            <p className="text-base text-white/90">
               {profile.name}님과의 소울링크
             </p>
-            <p className="text-sm text-gray-400 mt-1">{timeElapsedText}</p>
+            {/* Only show time elapsed if daysPassed > 0 and requestDate was provided */}
+            {requestDate && daysPassed > 0 && (
+              <p className="text-sm text-white/65 mt-1">{timeElapsedText}</p>
+            )}
           </div>
         </div>
         {actions && (
@@ -188,60 +221,71 @@ const SoulLinkPage = () => {
   }) => (
     <button
       onClick={onClick}
-      className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${className}`}
+      className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors hover:cursor-pointer ${className}`}
     >
       {children}
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 flex flex-col pt-12">
-      <div className="max-w-[680px] mx-auto w-full flex-grow">
-        <h1 className="text-2xl font-semibold mb-6 text-gray-200">소울 링크</h1>
+    <div className="min-h-screen bg-zinc-950 text-white p-4 flex flex-col pt-12">
+      <div className="max-w-[680px] mx-auto w-full flex flex-col gap-4">
+        <div>
+          <h1 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-6">
+            소울 링크
+          </h1>
 
-        {/* Top Grid - Maybe filter this later to show only LINKED profiles? */}
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-4 mb-12">
-          {allProfiles.map((profile) => (
-            <div
-              key={profile.id}
-              className="flex flex-col items-center space-y-1"
-            >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 relative">
-                <Image
-                  src={profile.imageUrl}
-                  alt={profile.name}
-                  fill={true}
-                  className="rounded-full object-cover border-2 border-gray-700"
-                  unoptimized
-                />
+          {/* Top Grid - Maybe filter this later to show only LINKED profiles? */}
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-8 mb-12">
+            {allProfiles.map((profile) => (
+              <div
+                key={profile.id}
+                className="flex flex-col items-center space-y-2"
+              >
+                <div className="w-16 h-16 sm:w-20 sm:h-20 relative">
+                  <Image
+                    src={profile.imageUrl}
+                    alt={profile.name}
+                    fill={true}
+                    className="rounded-full border-2 border-[#38d4e7] object-cover"
+                  />
+                </div>
+                <Link href="/soullink/someone" legacyBehavior>
+                  <a className="text-base text-white/85 hover:underline cursor-pointer">
+                    {profile.name}
+                  </a>
+                </Link>
               </div>
-              <Link href="/soullink/someone" legacyBehavior>
-                <a className="text-base text-gray-200 hover:underline cursor-pointer">
-                  {profile.name}
-                </a>
-              </Link>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* Sent Requests Section */}
-        {sentRequests.length > 0 && (
+        {/* Mutual Interest Section */}
+        {mutuallyInterestedProfileIds.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-gray-300">
-              보낸 요청
+            <h2 className="text-xl font-semibold mb-4 text-white/90">
+              소울링크 보내기
             </h2>
             <ul className="space-y-3">
-              {sentRequests.map((req) => {
-                const profile = getProfileById(req.receiverProfileId);
+              {mutuallyInterestedProfileIds.map((profileId) => {
+                const profile = getProfileById(profileId);
+                // Find one of the requests to get the date (e.g., the one sent by the current user)
+                const relevantRequest = sentPendingRequests.find(
+                  (req) => req.receiverProfileId === profileId
+                );
+                const requestDate = relevantRequest
+                  ? relevantRequest.requestDate
+                  : getDateNDaysAgo(0); // Fallback date
+
                 return profile
                   ? renderProfileItem(
                       profile,
-                      req.requestDate,
+                      requestDate, // Use the date from one of the requests
                       <ActionButton
-                        onClick={() => handleCancelRequest(req.id)}
-                        className="border border-red-500 text-red-400 hover:bg-red-900 hover:text-red-300"
+                        onClick={() => handleSendSoulLink(profile.id)}
+                        className="bg-[#6ABECF] hover:bg-[#7AC5D9] text-white"
                       >
-                        내리기
+                        소울링크 보내기
                       </ActionButton>
                     )
                   : null;
@@ -251,56 +295,29 @@ const SoulLinkPage = () => {
         )}
 
         {/* Received Requests Section */}
-        {receivedRequests.length > 0 && (
+        {receivedPendingRequests.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-gray-300">
-              받은 요청
+            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
+              서로 관심 표현
             </h2>
             <ul className="space-y-3">
-              {receivedRequests.map((req) => {
+              {receivedPendingRequests.map((req) => {
                 const profile = getProfileById(req.senderProfileId);
+                // Exclude profiles already shown in the mutual interest section
+                if (
+                  profile &&
+                  mutuallyInterestedProfileIds.includes(profile.id)
+                ) {
+                  return null;
+                }
                 return profile
                   ? renderProfileItem(
                       profile,
-                      req.requestDate,
+                      "", // Pass empty string to hide time elapsed
                       <>
                         <ActionButton
                           onClick={() => handleAcceptRequest(req.id)}
-                          className="bg-blue-600 hover:bg-blue-500 text-blue-100"
-                        >
-                          소울링크 띄우기
-                        </ActionButton>
-                        <ActionButton
-                          onClick={() => handleDeferRequest(req.id)}
-                          className="bg-gray-600 hover:bg-gray-500 text-gray-100"
-                        >
-                          아직이요, 좀 더 시간을 가져볼게요
-                        </ActionButton>
-                      </>
-                    )
-                  : null;
-              })}
-            </ul>
-          </div>
-        )}
-
-        {/* Thinking Requests Section */}
-        {thinkingRequests.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-gray-300">
-              생각 중인 요청
-            </h2>
-            <ul className="space-y-3">
-              {thinkingRequests.map((req) => {
-                const profile = getProfileById(req.senderProfileId);
-                return profile
-                  ? renderProfileItem(
-                      profile,
-                      req.requestDate,
-                      <>
-                        <ActionButton
-                          onClick={() => handleAcceptRequest(req.id)}
-                          className="bg-blue-600 hover:bg-blue-500 text-blue-100"
+                          className="bg-[#4A9DAF] hover:bg-[#5FA8B9] text-white"
                         >
                           소울링크 띄우기
                         </ActionButton>
@@ -312,8 +329,29 @@ const SoulLinkPage = () => {
           </div>
         )}
 
-        {/* Add some bottom padding */}
-        <div className="pb-16"></div>
+        {/* Sent Requests Section */}
+        {sentPendingRequests.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
+              보낸 요청
+            </h2>
+            <ul className="space-y-3">
+              {sentPendingRequests.map((req) => {
+                const profile = getProfileById(req.receiverProfileId);
+                // Exclude profiles already shown in the mutual interest section
+                if (
+                  profile &&
+                  mutuallyInterestedProfileIds.includes(profile.id)
+                ) {
+                  return null;
+                }
+                return profile
+                  ? renderProfileItem(profile, req.requestDate)
+                  : null;
+              })}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

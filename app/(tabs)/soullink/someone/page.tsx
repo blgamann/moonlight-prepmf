@@ -159,7 +159,7 @@ export default function SomeonePage() {
             </div>
 
             {/* Message Input Area - Sticky at the bottom */}
-            <div className="sticky bottom-0 z-10 bg-black/80 backdrop-blur-sm border-t border-gray-700 p-4">
+            <div className="sticky bottom-0 z-10 bg-zinc-950/80 backdrop-blur-sm border-t border-gray-700 p-4">
               <form
                 onSubmit={handleSendMessage}
                 className="flex items-center space-x-3"
@@ -212,9 +212,9 @@ export default function SomeonePage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col max-w-[680px] mx-auto w-full">
+    <div className="min-h-screen bg-zinc-950 text-white flex flex-col max-w-[680px] mx-auto w-full">
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-sm border-b border-gray-700 p-4 flex items-center justify-center space-x-3">
+      <div className="sticky top-0 z-10 bg-zinc-950/80 backdrop-blur-sm border-b border-gray-700 p-4 flex items-center justify-center space-x-3">
         {/* Profile Picture using data from JSON */}
         {profile ? (
           <div className="relative w-8 h-8">

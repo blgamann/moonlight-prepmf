@@ -32,7 +32,7 @@ function WriteAnswerContent() {
 
   const isFromList = from === "list";
   const backHref = isFromList ? "/garden/vegan" : "/garden/vegan/answer";
-  const backText = isFromList ? "← 질문 목록으로 돌아가기" : "← 다른 답변 보기";
+  const backText = isFromList ? "← 이전 페이지" : "← 이전 페이지";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,10 +42,19 @@ function WriteAnswerContent() {
     // router.push('/garden/vegan/answer');
   };
 
+  // Function to handle textarea auto-resizing
+  const handleTextareaInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+    // Reset height to auto to get the correct scrollHeight
+    e.target.style.height = "auto";
+    // Set the height to the scrollHeight to fit the content
+    e.target.style.height = `${e.target.scrollHeight}px`;
+  };
+
   return (
-    <div className="w-full min-h-screen bg-black text-white px-4 py-6 pt-16 space-y-6">
+    <div className="w-full min-h-screen bg-zinc-950 text-white px-4 py-6 pt-16 space-y-6">
       {/* Header Section: Question + Book Info */}
-      <div className="max-w-[680px] mx-auto border-b border-gray-700 pb-6">
+      <div className="max-w-[680px] mx-auto border-b border-white/10 pb-6">
         {/* Back Button/Link */}
         <div className="mb-6">
           <Link
@@ -66,7 +75,7 @@ function WriteAnswerContent() {
 
           {/* Right: Book Info */}
           <div className="flex-shrink-0 w-[80px] text-center">
-            <div className="relative aspect-[3/4] w-full rounded overflow-hidden shadow-sm border border-gray-700">
+            <div className="relative aspect-[3/4] w-full rounded overflow-hidden shadow-sm border border-white/10">
               <Image
                 src={book.imageUrl}
                 alt={`${book.title} 책 표지`}
@@ -75,60 +84,51 @@ function WriteAnswerContent() {
                 className="object-cover"
               />
             </div>
-            <p className="text-sm font-medium text-gray-300 truncate">
+            <p className="text-sm font-medium text-white/80 truncate">
               {book.title}
             </p>
-            <p className="text-xs text-gray-500 truncate">{book.author}</p>
+            <p className="text-xs text-white/60 truncate">{book.author}</p>
           </div>
         </div>
       </div>
 
       {/* Answer Input Form Section */}
       <div className="max-w-[680px] mx-auto mt-8">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Answer Title Input */}
+        <form onSubmit={handleSubmit} className="space-y-1">
+          {/* Answer Title Input - Updated */}
           <div>
-            <label
-              htmlFor="answerTitle"
-              className="block text-lg font-medium text-gray-300 mb-2"
-            >
-              답변 제목
-            </label>
             <input
               type="text"
               id="answerTitle"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="답변의 제목을 입력하세요"
+              placeholder="제목"
               required
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full py-3 rounded-md border border-transparent bg-transparent text-2xl font-semibold text-white/95 transition-all duration-300 ease-in-out focus:outline-none placeholder:text-2xl placeholder:font-semibold placeholder:text-gray-500 focus:placeholder:text-gray-600"
             />
           </div>
 
-          {/* Answer Text Input */}
+          {/* Answer Text Input - Updated */}
           <div>
-            <label
-              htmlFor="answerText"
-              className="block text-lg font-medium text-gray-300 mb-2"
-            >
-              답변 내용
-            </label>
             <textarea
               id="answerText"
               value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="질문에 대한 당신의 생각이나 경험을 자유롭게 적어주세요."
+              onChange={handleTextareaInput}
+              onInput={handleTextareaInput}
+              placeholder="당신의 답변을 작성해주세요..."
               required
-              rows={10}
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              rows={1}
+              className="w-full py-3 rounded-md border border-transparent bg-transparent text-xl text-white/85 transition-all duration-300 ease-in-out focus:outline-none placeholder:text-xl placeholder:text-gray-500 focus:placeholder:text-gray-600 resize-none overflow-hidden"
             />
           </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-end pt-4">
+          {/* Submit Button - Reverted to relative positioning within the form */}
+          {/* Add back the wrapping div with flex end alignment */}
+          <div className="flex justify-end pt-24">
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-black"
+              // Removed fixed positioning classes, restored original/modified classes
+              className="py-2 px-3 border-none rounded-md bg-[#4A9DAF] text-white text-base cursor-pointer transition-all duration-300 ease-in-out hover:bg-[#5FA8B9] hover:-translate-y-0.5"
             >
               답변 제출
             </button>

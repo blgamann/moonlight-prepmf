@@ -1,12 +1,27 @@
 "use client";
 
-import { Inbox } from "lucide-react";
-import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 // Define data shapes for props
+interface Book {
+  id: string;
+  title: string;
+  imageUrl: string;
+}
+
+interface Question {
+  id: string;
+  book_id: string;
+  question_text: string;
+}
+
 interface Answer {
+  id: string;
+  question_id: string;
   title: string;
   answer_text: string;
+  date: string;
   // created_at: string; // Remove unused field
   // other answer fields if needed...
 }
@@ -14,69 +29,65 @@ interface Answer {
 // Define component props interface
 interface AnswerSectionProps {
   answer: Answer;
-  // question: Question; // Remove question prop
+  question: Question;
+  book?: Book | null;
 }
 
 // Define the AnswerSection component
-export default function AnswerSection({ answer }: AnswerSectionProps) {
-  const [isFavorited, setIsFavorited] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  const toggleFavorite = () => {
-    setIsFavorited(!isFavorited);
-    // Add logic here to persist the favorite status (e.g., API call)
-  };
+export default function AnswerSection({
+  answer,
+  question,
+  book,
+}: AnswerSectionProps) {
+  // Format date (Example: 2024-07-20 -> 2024. 07. 20.)
+  const formattedDate = answer.date.replace(/-/g, ". ") + ".";
 
   return (
-    <section className="mt-10">
+    <section className="max-w-[680px] mx-auto">
       {/* Answer Title */}
-      <h2 className="text-2xl font-semibold text-white mb-4">{answer.title}</h2>
+      <h2 className="text-4xl font-semibold text-white/90">{answer.title}</h2>
+
+      {/* Book and Question Info Section - Added */}
+      {book && (
+        <div className="flex items-start space-x-4 border-b border-t border-white/30 py-8 my-8">
+          <div className="flex-shrink-0">
+            <Image
+              src={book.imageUrl}
+              alt={`${book.title} cover`}
+              width={60}
+              height={90}
+              className="rounded object-cover"
+            />
+          </div>
+          <div>
+            <Link href={`/books/${book.id}`}>
+              <span className="text-base text-white/65 hover:underline">
+                {book.title}
+              </span>
+            </Link>
+            <p className="text-lg mt-1 text-white/85">
+              {question.question_text}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main Answer Text */}
-      <p className="text-xl text-gray-200 mb-4 leading-relaxed">
+      <p
+        className={`text-xl text-white/85 mb-4 leading-relaxed whitespace-pre-line ${
+          book ? "" : "mt-8"
+        }`}
+      >
         {answer.answer_text}
       </p>
 
-      <div className="flex justify-between items-center mb-8 ml-[-4px]">
+      <div className="flex justify-between items-center ml-[-4px]">
         {/* Left: Favorite Button with Tooltip */}
-        <div className="relative">
-          <button
-            type="button"
-            onClick={toggleFavorite}
-            onMouseEnter={() => setShowTooltip(true)}
-            onMouseLeave={() => setShowTooltip(false)}
-            className={`p-1 rounded-full focus:outline-none ${
-              isFavorited
-                ? "text-blue-500"
-                : "text-gray-400 hover:text-blue-500"
-            }`}
-            aria-label={isFavorited ? "Remove from inbox" : "Add to inbox"}
-          >
-            <Inbox
-              className="h-6 w-6"
-              fill={isFavorited ? "currentColor" : "none"}
-              aria-hidden="true"
-            />
-          </button>
-          {showTooltip && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded shadow-lg z-10 whitespace-nowrap">
-              답변 보관
-            </div>
-          )}
-        </div>
+        <div className="relative"></div>
 
         {/* Right: Date */}
-        <p className="text-base text-gray-500">
-          2025. 04. 19. {/* Display fixed date */}
-        </p>
+        <p className="text-base text-white/65">{formattedDate}</p>
       </div>
-
-      {/* Context Area (Book & Question) - Removed */}
-      {/* <div className="flex items-start space-x-6 border-t border-gray-700 pt-6">
-        <div className="flex flex-col flex-grow pt-1">
-          <p className="text-base text-gray-300">{question.question_text}</p>
-        </div>
-      </div> */}
     </section>
   );
 }

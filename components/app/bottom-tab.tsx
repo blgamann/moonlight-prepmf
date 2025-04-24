@@ -24,11 +24,11 @@ export default function BottomTab() {
     { href: "/soullink", icon: Activity, label: "소울링크" },
     { href: "/notification", icon: Bell, label: "알림" },
     { href: "/profile", icon: UserRound, label: "프로필" },
-    { href: "/collection", icon: Library, label: "나의 모음" },
+    { href: "/collection", icon: Library, label: "나의 관심" },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 h-[60px] bg-[#111] border-t border-white/10 flex justify-around items-center z-10 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 h-[60px] bg-zinc-950 border-t border-white/10 flex justify-around items-center z-10 md:hidden">
       {navItems.map((item) => {
         const Icon = item.icon;
         const active = isActive(item.href);

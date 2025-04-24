@@ -1,425 +1,141 @@
-"use client"; // Add this directive for useState
+"use client";
 
-import { useState } from "react"; // Import useState
-import UserInfoSection from "./UserInfoSection"; // Import the new component
-import AnswerSection from "./AnswerSection"; // Import the new component
-import UserRelationSection from "./UserRelationSection"; // Import the new combined section component
-import BookInfo from "./BookInfo"; // Import BookInfo
-
-// --- Define Interfaces for Data Structures ---
-interface UserProfile {
-  profile_id: string;
-  name: string;
-  imageUrl: string;
-  bio?: string; // Optional bio for target user data
-}
-
-interface Book {
-  id: string;
-  title: string;
-  author: string;
-  imageUrl: string;
-}
-
-interface Question {
-  id: string;
-  question_text: string;
-}
-
-interface Answer {
-  id: string;
-  title: string;
-  answer_text: string;
-}
-
-interface MagazineArticle {
-  book: Book;
-  question: Question;
-  answer: Answer;
-}
-
-interface UserMagazine {
-  userData: UserProfile;
-  booksReadCount: number;
-  magazineData: MagazineArticle[];
-}
-
-interface ConnectionInfo {
-  degree: number;
-  path: UserProfile[];
-}
-
-// Type for the connectionPaths object
-interface ConnectionPathsData {
-  [viewingUserId: string]: {
-    [targetUserId: string]: ConnectionInfo;
-  };
-}
-
-// Interface for detailed common book info
-interface CommonBookDetail {
-  id: string;
-  title: string;
-  author: string;
-  imageUrl: string;
-}
-
-// Interface for Common Books Data (updated)
-interface CommonBooksInfo {
-  // count: number; // count can be derived from books.length
-  books: CommonBookDetail[]; // Array of detailed book objects
-}
-
-// Type for the commonBooksData object (updated)
-interface CommonBooksData {
-  [viewingUserId: string]: {
-    [targetUserId: string]: CommonBooksInfo;
-  };
-}
-
-// ---------------------------------------------
-
-// --- Data Setup for Multiple Users ---
-const allUserMagazines: UserMagazine[] = [
-  // User 1 Data
-  {
-    userData: {
-      profile_id: "profile-1",
-      name: "김민준",
-      imageUrl: "/profiles/profile1.png",
-      bio: "기술을 통해 사람들의 삶을 더 풍요롭게 만들고 싶습니다. 의미있는 연결을 통해 함께 성장하고 싶어요.",
-    },
-    booksReadCount: 2,
-    magazineData: [
-      {
-        book: {
-          id: "book-vegetarian",
-          title: "채식주의자",
-          author: "한강",
-          imageUrl: "/books/book1.jpg",
-        },
-        question: {
-          id: "q-veg-1",
-          question_text:
-            "영혜처럼 사회의 '정상성'에 의문을 품고 자신만의 길을 가고 싶었던 적이 있나요? 어떤 경험이었나요?",
-        },
-        answer: {
-          id: "a-veg-1",
-          title: "나만의 길, 작은 용기",
-          answer_text:
-            "대학교 때, 모두가 취업 준비에 몰두할 때 혼자서 인문학 스터디를 계속했던 기억이 나요. 당장은 불확실해 보였지만, 그때의 고민과 독서가 지금의 저를 만든 자양분이 되었다고 생각해요. 영혜처럼 거창하진 않아도, 남들이 '정상'이라고 생각하는 길에서 잠시 벗어나 자신만의 가치를 따랐던 작은 용기였죠.",
-        },
-      },
-      {
-        book: {
-          id: "book-seonghak",
-          title: "성학십도",
-          author: "퇴계 이황",
-          imageUrl: "/books/book2.jpg",
-        },
-        question: {
-          id: "q-sh-1",
-          question_text:
-            "퇴계 이황이 제시한 성리학적 수양 방법 중 현대 사회에서도 여전히 유효하다고 생각하는 부분이 있나요? 혹은 자신만의 마음 다스리는 방법이 있다면 소개해주세요.",
-        },
-        answer: {
-          id: "a-sh-1",
-          title: "현대 사회의 '경(敬)' 실천",
-          answer_text:
-            "퇴계 이황 선생님의 '경(敬)' 사상은 지금도 중요하다고 생각해요. 늘 깨어있는 마음으로 자신을 성찰하고 순간에 집중하는 태도는 복잡한 현대 사회에서 마음의 중심을 잡는 데 큰 도움이 됩니다. 저는 매일 아침 10분 정도 명상을 하면서 하루를 시작하는데, 이게 저만의 '경'을 실천하는 방식인 것 같아요.",
-        },
-      },
-    ],
-  },
-  // User 2 Data
-  {
-    userData: {
-      profile_id: "profile-2",
-      name: "이수현",
-      imageUrl: "/profiles/profile2.png",
-      bio: "다양한 관점을 탐구하고 이해하는 것을 즐깁니다. 책과 사람을 통해 세상을 배워가고 있어요.",
-    },
-    booksReadCount: 5,
-    magazineData: [
-      {
-        book: {
-          id: "book-homo-deus",
-          title: "호모 데우스: 미래의 역사",
-          author: "유발 하라리",
-          imageUrl: "/books/book3.jpg",
-        },
-        question: {
-          id: "q-hd-1",
-          question_text:
-            "유발 하라리가 예측하는 '호모 데우스'의 미래, 즉 인류가 기술을 통해 신적인 능력을 추구하는 것에 대해 어떻게 생각하시나요? 기대되는 점과 우려되는 점은 무엇인가요?",
-        },
-        answer: {
-          id: "a-hd-1",
-          title: "기술 발전의 빛과 그림자",
-          answer_text:
-            "기술로 질병과 노화를 극복하는 미래는 기대되지만, 그 혜택이 소수에게만 집중될까 봐 우려됩니다. 유전자를 편집해서 '맞춤 아기'를 만드는 세상이 온다면, 인간의 존엄성이나 다양성은 어떻게 될까요? 기술 발전의 방향에 대한 사회적 합의와 윤리적 고민이 반드시 필요하다고 생각합니다.",
-        },
-      },
-      {
-        book: {
-          id: "book-vegetarian",
-          title: "채식주의자",
-          author: "한강",
-          imageUrl: "/books/book1.jpg",
-        },
-        question: {
-          id: "q-veg-2",
-          question_text:
-            "책에서 묘사된 인간의 폭력성에 대해 어떻게 생각하시나요? 일상 속에서 폭력성의 다른 형태를 목격하거나 경험한 적이 있다면 이야기해주세요.",
-        },
-        answer: {
-          id: "a-veg-2",
-          title: "가장 무서운 폭력, 무관심",
-          answer_text:
-            "가장 무서운 폭력은 무관심이라고 생각해요. 영혜의 가족들이 보인 반응처럼요. 직접적인 폭력만큼이나, 혹은 그보다 더 깊은 상처를 줄 수 있죠. 직장에서 동료가 부당한 일을 겪는 것을 알면서도 침묵했던 제 모습이 떠올라 부끄러웠습니다. 이후로는 작게나마 목소리를 내려고 노력하고 있어요.",
-        },
-      },
-    ],
-  },
-];
-// -------------------------------
-
-// --- Mock Viewing User and Connection Data ---
-// Assume the current viewing user is 정현우
-const viewingUserProfile: UserProfile = {
-  profile_id: "profile-5", // Use ID from data.json
-  name: "정현우",
-  imageUrl: "/profiles/profile5.png", // Use correct image path from data.json
-};
-
-// Apply the defined type to connectionPaths
-const connectionPaths: ConnectionPathsData = {
-  [viewingUserProfile.profile_id]: {
-    "profile-1": {
-      degree: 2,
-      path: [
-        {
-          profile_id: "profile-intermediate-1",
-          name: "박지훈",
-          imageUrl: "/profiles/profile3.png",
-        },
-      ],
-    },
-    "profile-2": {
-      degree: 3,
-      path: [
-        {
-          profile_id: "profile-intermediate-1",
-          name: "박지훈",
-          imageUrl: "/profiles/profile3.png",
-        },
-        {
-          profile_id: "profile-intermediate-2",
-          name: "최유나",
-          imageUrl: "/profiles/profile4.png",
-        },
-      ],
-    },
-  },
-};
-
-// --- Mock Common Books Data (Updated with full book details) ---
-const commonBooksData: CommonBooksData = {
-  [viewingUserProfile.profile_id]: {
-    "profile-1": {
-      // 정현우 - 김민준
-      books: [
-        {
-          id: "book-vegetarian",
-          title: "채식주의자",
-          author: "한강",
-          imageUrl: "/books/book1.jpg",
-        },
-        {
-          id: "book-seonghak",
-          title: "성학십도",
-          author: "퇴계 이황",
-          imageUrl: "/books/book2.jpg",
-        },
-      ],
-    },
-    "profile-2": {
-      // 정현우 - 이수현 (Changed Sapiens to Vegetarian)
-      books: [
-        {
-          id: "book-homo-deus",
-          title: "호모 데우스: 미래의 역사",
-          author: "유발 하라리",
-          imageUrl: "/books/book3.jpg",
-        },
-        {
-          id: "book-vegetarian",
-          title: "채식주의자",
-          author: "한강",
-          imageUrl: "/books/book1.jpg",
-        },
-      ],
-    },
-  },
-};
-// -------------------------------------------
+import { useState, useRef, useEffect } from "react";
+import UserInfoSection from "./UserInfoSection";
+import AnswerSection from "./AnswerSection";
+import SoulLine from "./SoulLine";
+import MutualBooks from "./MutualBooks";
+import data from "@/data.json";
 
 export default function DiscoverPage() {
-  // State for current user index
-  const [currentUserIndex, setCurrentUserIndex] = useState(0);
-  // State for current article index within the current user's magazine
-  const [currentArticleIndex, setCurrentArticleIndex] = useState(0);
+  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const user = data.profiles[currentProfileIndex];
 
-  const totalUsers = allUserMagazines.length;
-  const currentUserMagazine = allUserMagazines[currentUserIndex];
-  const totalArticles = currentUserMagazine.magazineData.length;
+  const soulLineUsers = [
+    { name: "나", imageUrl: user.imageUrl },
+    ...data.profiles.filter((p) => p.id !== user.id).slice(0, 2),
+  ];
 
-  // Get current article data for the selected user
-  const currentArticle = currentUserMagazine.magazineData[currentArticleIndex];
-  const currentUserData = currentUserMagazine.userData;
-  const currentBooksReadCount = currentUserMagazine.booksReadCount;
+  const mutualBooksData = data.books.slice(0, 3).map((book) => ({
+    title: book.title,
+    imageUrl: book.imageUrl,
+  }));
 
-  // Get connection info for the currently displayed user
-  const connectionInfo =
-    connectionPaths[viewingUserProfile.profile_id]?.[
-      currentUserData.profile_id
-    ];
+  const answersToShow = data.book_answers
+    .filter((answer) => answer.profile_id === user.id)
+    .slice(0, 3)
+    .map((answer) => {
+      const question = data.book_questions.find(
+        (q) => q.id === answer.question_id
+      );
+      const book = data.books.find((b) => b.id === question?.book_id);
+      return { answer, question, book };
+    })
+    .filter((item) => item.question && item.book);
 
-  // Get common books info for the currently displayed user
-  const commonBooksInfo =
-    commonBooksData[viewingUserProfile.profile_id]?.[
-      currentUserData.profile_id
-    ];
-
-  // --- Navigation Handlers ---
-
-  // Article Navigation
-  const handlePreviousArticle = () => {
-    setCurrentArticleIndex((prevIndex) =>
-      prevIndex === 0 ? totalArticles - 1 : prevIndex - 1
+  const handleNextProfile = () => {
+    setCurrentProfileIndex(
+      (prevIndex) => (prevIndex + 1) % data.profiles.length
     );
   };
 
-  const handleNextArticle = () => {
-    setCurrentArticleIndex((prevIndex) =>
-      prevIndex === totalArticles - 1 ? 0 : prevIndex + 1
+  const handlePreviousProfile = () => {
+    setCurrentProfileIndex((prevIndex) =>
+      prevIndex === 0 ? data.profiles.length - 1 : prevIndex - 1
     );
   };
 
-  // User Navigation
-  const handlePreviousUser = () => {
-    setCurrentUserIndex((prevIndex) => {
-      const newIndex = prevIndex === 0 ? totalUsers - 1 : prevIndex - 1;
-      setCurrentArticleIndex(0); // Reset article index when user changes
-      return newIndex;
-    });
-  };
-
-  const handleNextUser = () => {
-    setCurrentUserIndex((prevIndex) => {
-      const newIndex = prevIndex === totalUsers - 1 ? 0 : prevIndex + 1;
-      setCurrentArticleIndex(0); // Reset article index when user changes
-      return newIndex;
-    });
-  };
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [currentProfileIndex]);
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col relative">
-      {/* Main Content Area */}
-      <div className="max-w-[680px] mx-auto w-full flex-grow">
-        {/* Display Today's Date and Country Flag */}
-        <div className="sticky top-0 bg-black py-4 border-b border-gray-700 z-10 flex justify-center items-center">
-          <span className="text-lg text-center text-gray-400">
-            {formattedDate}
-          </span>
-          {/* <span className="text-2xl">🇰🇷</span> */}
-        </div>
-
-        {/* Pass current user's data */}
-        <div className="pt-12">
-          <UserInfoSection
-            user={currentUserData}
-            booksReadCount={currentBooksReadCount}
-          />
-        </div>
-
-        {/* Use the AnswerSection component with current user's article data */}
-        <AnswerSection
-          answer={currentArticle.answer}
-          // question={currentArticle.question} // Remove question prop
-        />
-
-        {/* Context Area (Question & Book) - Recreated here */}
-        <div className="flex items-start space-x-6 border-t border-gray-700 pt-6">
-          {/* Left: Context Text (Question only) */}
-          <div className="flex flex-col flex-grow pt-1">
-            <p className="text-base text-gray-300">
-              {currentArticle.question.question_text}
-            </p>
-          </div>
-          {/* Right: Book Cover and Info */}
-          <BookInfo book={currentArticle.book} />
-        </div>
-
-        {/* Article Navigation */}
-        <div className="flex justify-between items-center mt-6">
-          <button
-            onClick={handlePreviousArticle}
-            className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50"
-            disabled={totalArticles <= 1} // Disable if only one article
-          >
-            이전 답변
-          </button>
-          <span className="text-sm text-gray-400">
-            {totalArticles > 0 ? currentArticleIndex + 1 : 0} / {totalArticles}
-          </span>
-          <button
-            onClick={handleNextArticle}
-            className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white text-sm disabled:opacity-50"
-            disabled={totalArticles <= 1} // Disable if only one article
-          >
-            다음 답변
-          </button>
-        </div>
-
-        {/* Render Combined User Relation Section if either connection or common books info exists */}
-        {(connectionInfo ||
-          (commonBooksInfo && commonBooksInfo.books?.length > 0)) && (
-          <UserRelationSection
-            viewingUser={viewingUserProfile}
-            targetUser={currentUserData}
-            connectionInfo={connectionInfo} // Pass connection info (might be undefined)
-            commonBooksInfo={commonBooksInfo} // Pass common books info (might be undefined or have empty books)
-          />
-        )}
+    <div className="flex flex-col h-screen">
+      <div className="text-center border-b border-white/30 text-white/65 text-lg font-medium py-4">
+        2025년 4월 24일
       </div>
 
-      {/* Re-add Sticky Footer for User Navigation */}
-      <div className="sticky bottom-0 left-0 right-0 py-6 bg-black bg-opacity-80 backdrop-blur-sm z-40 border-t border-gray-700">
-        <div className="max-w-[680px] mx-auto flex justify-between items-center px-4">
-          <button
-            onClick={handlePreviousUser}
-            className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 text-white text-sm"
-          >
-            이전 프로필
-          </button>
-          <span className="text-base text-gray-400">
-            프로필 {currentUserIndex + 1} / {totalUsers}
-          </span>
-          <button
-            onClick={handleNextUser}
-            className="px-4 py-2 rounded bg-blue-700 hover:bg-blue-600 text-white text-sm"
-          >
-            다음 프로필
-          </button>
+      <div
+        ref={scrollContainerRef}
+        className="flex-grow overflow-y-auto p-4 flex flex-col gap-24 pt-18"
+      >
+        <UserInfoSection user={user} />
+        {answersToShow.length > 0 ? (
+          answersToShow.map(({ answer, question, book }) => (
+            <div key={answer.id}>
+              <AnswerSection
+                answer={answer}
+                question={question!}
+                book={book!}
+              />
+            </div>
+          ))
+        ) : (
+          <div className="text-center text-white/65 py-8">
+            이 사용자의 답변이 없습니다.
+          </div>
+        )}
+        <div>
+          <SoulLine users={soulLineUsers} />
+          <MutualBooks books={mutualBooksData} />
         </div>
+      </div>
+      <BottomNavigation
+        onNext={handleNextProfile}
+        onPrevious={handlePreviousProfile}
+      />
+    </div>
+  );
+}
+
+function BottomNavigation({
+  onNext,
+  onPrevious,
+}: {
+  onNext: () => void;
+  onPrevious: () => void;
+}) {
+  return (
+    <div className="p-6 border-t border-white/30 flex justify-between items-center">
+      <div
+        onClick={onPrevious}
+        className="text-white/65 text-lg font-medium flex items-center gap-2 hover:underline hover:cursor-pointer"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="w-5 h-5 mt-1"
+        >
+          <path
+            fillRule="evenodd"
+            d="M9.53 2.47a.75.75 0 0 1 0 1.06L4.81 8.25H19.5a.75.75 0 0 1 0 1.5H4.81l4.72 4.72a.75.75 0 1 1-1.06 1.06l-6-6a.75.75 0 0 1 0-1.06l6-6a.75.75 0 0 1 1.06 0Z"
+            clipRule="evenodd"
+          />
+        </svg>
+        이전 프로필
+      </div>
+      <div
+        onClick={onNext}
+        className="text-white/65 text-lg font-medium flex items-center gap-2 hover:underline hover:cursor-pointer"
+      >
+        다음 프로필
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          className="w-5 h-5 mt-1"
+        >
+          <path
+            fillRule="evenodd"
+            d="M14.47 2.47a.75.75 0 0 1 1.06 0l6 6a.75.75 0 0 1 0 1.06l-6 6a.75.75 0 1 1-1.06-1.06L19.19 9.75H4.5a.75.75 0 0 1 0-1.5h14.69l-4.72-4.72a.75.75 0 0 1 0-1.06Z"
+            clipRule="evenodd"
+          />
+        </svg>
       </div>
     </div>
   );

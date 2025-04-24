@@ -79,7 +79,7 @@ const HighlightedMessage = ({
             newParts.push(
               <span
                 key={`${keyword}-${index}-${i}`}
-                className="text-blue-500 font-semibold"
+                className="text-[#6ABECF] font-semibold"
               >
                 {keyword}
               </span>
@@ -105,101 +105,88 @@ export default function NotificationPage() {
   );
 
   return (
-    // Adjusted padding slightly, kept bg-gray-50
-    <div className="font-sans min-h-screen text-gray-800 py-6">
-      {/* Today Section - Wrapped list in div for max-width */}
-      {todayNotifications.length > 0 && (
-        <section className="mb-6">
-          <div className="max-w-[680px] mx-auto px-4">
-            {" "}
-            {/* Added max-width, mx-auto and px-4 here */}
-            <h2 className="text-lg font-semibold text-white mb-3">오늘</h2>{" "}
-            {/* Removed px-0 */}
-            <ul className="divide-y divide-gray-200 bg-white rounded-lg shadow-sm overflow-hidden">
+    // Updated main container styles
+    <div className="font-sans min-h-screen bg-zinc-950 text-white p-4 flex flex-col pt-12">
+      <div className="max-w-[680px] mx-auto w-full flex-grow">
+        {/* Today Section */}
+        {todayNotifications.length > 0 && (
+          <section className="mb-8">
+            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
+              오늘
+            </h2>
+            <ul className="space-y-3">
               {todayNotifications.map((notification) => (
                 <li
                   key={notification.id}
-                  className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-150"
+                  className="flex items-center justify-between p-4 bg-white/5 rounded-md border border-white/10"
                 >
-                  <img
-                    src={notification.user.avatarUrl}
-                    alt={`${notification.user.name} avatar`}
-                    className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    {notification.subText && (
-                      <p className="text-xs text-gray-500 truncate mb-0.5">
-                        {notification.subText}
+                  <div className="flex items-center space-x-4 flex-1 min-w-0">
+                    <img
+                      src={notification.user.avatarUrl}
+                      alt={`${notification.user.name} avatar`}
+                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base text-white/90">
+                        <HighlightedMessage message={notification.message} />
                       </p>
-                    )}
-                    <p className="text-sm text-gray-900">
-                      <HighlightedMessage message={notification.message} />
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      {notification.timestamp}
-                    </p>
+                      <p className="text-sm text-white/65 mt-1">
+                        {notification.timestamp}
+                      </p>
+                    </div>
                   </div>
                   {!notification.isRead && (
-                    <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 ml-2"></div>
+                    <div className="w-2.5 h-2.5 bg-[#6ABECF] rounded-full flex-shrink-0 ml-3"></div>
                   )}
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      {/* Last Week Section - Wrapped list in div for max-width */}
-      {lastWeekNotifications.length > 0 && (
-        <section>
-          <div className="max-w-[680px] mx-auto px-4">
-            {" "}
-            {/* Added max-width, mx-auto and px-4 here */}
-            <h2 className="text-lg font-semibold text-white mb-3">
+        {/* Last Week Section */}
+        {lastWeekNotifications.length > 0 && (
+          <section className="mb-8 mt-12">
+            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
               지난 주
-            </h2>{" "}
-            {/* Removed px-0 */}
-            <ul className="divide-y divide-gray-200 bg-white rounded-lg shadow-sm overflow-hidden">
+            </h2>
+            <ul className="space-y-3">
               {lastWeekNotifications.map((notification) => (
                 <li
                   key={notification.id}
-                  className="flex items-center space-x-3 px-4 py-3 hover:bg-gray-50 transition-colors duration-150"
+                  className="flex items-center p-4 bg-white/5 rounded-md border border-white/10"
                 >
-                  <img
-                    src={notification.user.avatarUrl}
-                    alt={`${notification.user.name} avatar`}
-                    className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    {notification.subText && (
-                      <p className="text-xs text-gray-500 truncate mb-0.5">
-                        {notification.subText}
+                  <div className="flex items-center space-x-4 flex-1 min-w-0">
+                    <img
+                      src={notification.user.avatarUrl}
+                      alt={`${notification.user.name} avatar`}
+                      className="w-10 h-10 rounded-full object-cover flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      {notification.subText && (
+                        <p className="text-sm text-white/65 truncate mb-0.5">
+                          {notification.subText}
+                        </p>
+                      )}
+                      <p className="text-base text-white/90">
+                        <HighlightedMessage message={notification.message} />
                       </p>
-                    )}
-                    <p className="text-sm text-gray-900">
-                      <HighlightedMessage message={notification.message} />
-                    </p>
-                    {/* Timestamp hidden for "Last Week" group as per previous logic */}
+                    </div>
                   </div>
-                  {/* Assuming past notifications are read */}
                 </li>
               ))}
             </ul>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      {/* Empty State (Optional) - Also centered */}
-      {todayNotifications.length === 0 &&
-        lastWeekNotifications.length === 0 && (
-          <div className="max-w-[680px] mx-auto px-4">
-            {" "}
-            {/* Added max-width, mx-auto and px-4 here */}
+        {/* Empty State (Optional) */}
+        {todayNotifications.length === 0 &&
+          lastWeekNotifications.length === 0 && (
             <div className="text-center py-20 text-gray-500">
               알림이 없습니다.
             </div>
-          </div>
-        )}
+          )}
+      </div>
     </div>
   );
 }
