@@ -60,7 +60,7 @@ export default function AnswerSection({
             />
           </div>
           <div>
-            <Link href={`/books/${book.id}`}>
+            <Link href={`/garden/vegan`}>
               <span className="text-base text-white/65 hover:underline">
                 {book.title}
               </span>

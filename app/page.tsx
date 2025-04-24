@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "moonlight - 관계가 피어나는 달빛 정원",
@@ -102,12 +103,14 @@ export default function Home() {
                   className="px-4 py-3 rounded-md border border-white/20 bg-white/10 text-white text-base transition-all duration-300 ease-in-out focus:outline-none focus:border-[#6ABECF] focus:bg-white/15"
                 />
               </div>
-              <button
-                type="submit"
-                className="mt-4 p-3 border-none rounded-md bg-[#4A9DAF] text-white text-lg cursor-pointer transition-all duration-300 ease-in-out hover:bg-[#5FA8B9] hover:-translate-y-0.5"
-              >
-                로그인
-              </button>
+              <Link href="/discover" passHref>
+                <button
+                  type="button"
+                  className="mt-4 p-3 border-none rounded-md bg-[#4A9DAF] text-white text-lg cursor-pointer transition-all duration-300 ease-in-out hover:bg-[#5FA8B9] hover:-translate-y-0.5 w-full"
+                >
+                  로그인
+                </button>
+              </Link>
               <div className="text-center text-[0.9rem] text-white/60">
                 <a
                   href="#"

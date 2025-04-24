@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation"; // Import useRouter
 import { Infinity, MessageSquare } from "lucide-react"; // Assuming lucide-react for icons
 import jsonData from "@/data.json"; // Corrected import path relative to component
 import AnswerCard from "@/components/AnswerCard"; // Import the new component
@@ -41,6 +44,8 @@ const relevantAnswers = book_answers.filter(
 );
 
 export default function VeganAnswerPage() {
+  const router = useRouter(); // Get router instance
+
   if (!question) {
     return <div>Question not found.</div>; // Handle case where question doesn't exist
   }
@@ -49,7 +54,10 @@ export default function VeganAnswerPage() {
     // Apply discover page main container style - remove h-screen
     <div className="flex flex-col max-w-[680px] mx-auto bg-zinc-950 text-white pt-12">
       {/* Header adapted from discover page style */}
-      <div className="text-white/65 text-lg font-medium flex items-center gap-2 hover:underline hover:cursor-pointer">
+      <div
+        className="text-white/65 text-lg font-medium flex items-center gap-2 hover:underline hover:cursor-pointer"
+        onClick={() => router.back()} // Add onClick handler
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

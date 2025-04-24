@@ -6,6 +6,7 @@ import SoulLine from "@/app/(tabs)/discover/SoulLine";
 import MutualBooks from "@/app/(tabs)/discover/MutualBooks";
 import data from "@/data.json";
 import Image from "next/image";
+import { useRouter } from "next/navigation"; // Import useRouter
 
 // TODO: Implement navigation logic (e.g., fetching next/previous answer)
 const handleNext = () => {
@@ -17,6 +18,7 @@ const handlePrevious = () => {
 };
 
 export default function AnswerDetailPage() {
+  const router = useRouter(); // Get router instance
   // TODO: Implement logic to get the specific answer based on params
   const user = data.profiles[0]; // Example: Get the first profile
 
@@ -75,7 +77,10 @@ export default function AnswerDetailPage() {
     <div className="flex flex-col h-screen">
       {/* Header with Back Button, Question Text, and Book Cover */}
       <div className="flex items-center justify-between border-b border-white/30 px-6 py-2">
-        <div className="cursor-pointer text-white/65 text-lg font-medium py-4">
+        <div
+          onClick={() => router.back()} // Add onClick handler
+          className="cursor-pointer text-white/65 text-lg font-medium py-4"
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

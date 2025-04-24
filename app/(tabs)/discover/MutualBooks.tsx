@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 interface Book {
   title: string;
@@ -10,6 +13,12 @@ interface MutualBooksProps {
 }
 
 export default function MutualBooks({ books }: MutualBooksProps) {
+  const router = useRouter();
+
+  const handleBookClick = () => {
+    router.push("/garden/vegan");
+  };
+
   return (
     <div className="w-full max-w-[680px] mx-auto border-t border-white/30 py-8">
       <div className="flex items-center gap-1.5 mb-8">
@@ -22,7 +31,11 @@ export default function MutualBooks({ books }: MutualBooksProps) {
       <div className="flex justify-start gap-8">
         {/* Map through books and display covers */}
         {books.map((book, index) => (
-          <div key={index} className="flex flex-col items-center gap-2">
+          <div
+            key={index}
+            className="flex flex-col items-center gap-2 cursor-pointer"
+            onClick={handleBookClick}
+          >
             <div className="relative w-[100px] h-[150px] rounded-md overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
               {/* Placeholder Image - Replace with actual Image component and src */}
               <Image
