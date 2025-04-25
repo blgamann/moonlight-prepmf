@@ -61,7 +61,7 @@ const GardenPage = () => {
   return (
     <div className="min-h-screen bg-zinc-950 text-white p-4 flex flex-col justify-center">
       {searchResults.length === 0 && (
-        <div className="text-center text-white/90 mt-12 text-xl font-['NanumMyeongjo']">
+        <div className="text-center font-semibold text-white/90 mt-12 text-xl">
           읽은 책을 검색하고, 새로운 대화를 시작해보세요.
         </div>
       )}

@@ -231,8 +231,8 @@ const SoulLinkPage = () => {
     <div className="min-h-screen bg-zinc-950 text-white p-4 flex flex-col pt-12">
       <div className="max-w-[680px] mx-auto w-full flex flex-col gap-4">
         <div>
-          <h1 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-6">
-            소울 링크
+          <h1 className="text-4xl font-semibold text-white/90 mb-6">
+            소울링크
           </h1>
 
           {/* Top Grid - Maybe filter this later to show only LINKED profiles? */}
@@ -297,7 +297,7 @@ const SoulLinkPage = () => {
         {/* Received Requests Section */}
         {receivedPendingRequests.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
+            <h2 className="text-xl text-white/90 font-semibold mb-4">
               서로 관심 표현
             </h2>
             <ul className="space-y-3">
@@ -332,7 +332,7 @@ const SoulLinkPage = () => {
         {/* Sent Requests Section */}
         {sentPendingRequests.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
+            <h2 className="text-xl text-white/90 font-semibold mb-4">
               보낸 요청
             </h2>
             <ul className="space-y-3">

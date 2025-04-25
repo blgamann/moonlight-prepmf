@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 interface UserProfile {
   name: string;
@@ -13,9 +14,7 @@ export default function SoulLine({ users }: SoulLineProps) {
   return (
     <div className="w-full max-w-[680px] mx-auto border-t border-white/30 py-8">
       <div className="flex items-center gap-1.5 mb-8">
-        <h2 className="text-xl text-white/90 font-['NanumMyeongjo']">
-          소울라인
-        </h2>
+        <h2 className="text-xl text-white/90 font-semibold">소울라인</h2>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -51,7 +50,12 @@ export default function SoulLine({ users }: SoulLineProps) {
                 // style={{ filter: 'blur(5px)' }}
               />
             </div>
-            <span className="text-base text-white/80">{user.name}</span>
+            <Link
+              href="/profile"
+              className="text-base text-white/80 hover:underline cursor-pointer"
+            >
+              {user.name}
+            </Link>
           </div>
         ))}
       </div>

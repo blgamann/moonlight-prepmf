@@ -111,7 +111,7 @@ export default function NotificationPage() {
         {/* Today Section */}
         {todayNotifications.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
+            <h2 className="text-xl text-white/90 font-semibold mb-4">
               오늘
             </h2>
             <ul className="space-y-3">
@@ -147,7 +147,7 @@ export default function NotificationPage() {
         {/* Last Week Section */}
         {lastWeekNotifications.length > 0 && (
           <section className="mb-8 mt-12">
-            <h2 className="text-xl text-white/90 font-['NanumMyeongjo'] mb-4">
+            <h2 className="text-xl text-white/90 font-semibold mb-4">
               지난 주
             </h2>
             <ul className="space-y-3">

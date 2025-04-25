@@ -22,9 +22,7 @@ export default function MutualBooks({ books }: MutualBooksProps) {
   return (
     <div className="w-full max-w-[680px] mx-auto border-t border-white/30 py-8">
       <div className="flex items-center gap-1.5 mb-8">
-        <h2 className="text-xl text-white/90 font-['NanumMyeongjo']">
-          함께 읽은 책
-        </h2>
+        <h2 className="text-xl text-white/90 font-semibold">함께 읽은 책</h2>
         {/* Optional: Add an info icon like in SoulLine if needed */}
       </div>
 
