@@ -45,7 +45,7 @@ export default function AnswerSection({
   return (
     <section className="max-w-[680px] mx-auto">
       {/* Answer Title */}
-      <h2 className="text-4xl font-semibold text-white/90">{answer.title}</h2>
+      <h2 className="text-5xl font-semibold text-white/90">{answer.title}</h2>
 
       {/* Book and Question Info Section - Added */}
       {book && (
@@ -74,7 +74,7 @@ export default function AnswerSection({
 
       {/* Main Answer Text */}
       <p
-        className={`text-xl text-white/85 mb-4 leading-relaxed whitespace-pre-line ${
+        className={`text-lg text-white/85 mb-4 leading-relaxed whitespace-pre-line ${
           book ? "" : "mt-8"
         }`}
       >
