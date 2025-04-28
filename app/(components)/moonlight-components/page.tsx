@@ -11,6 +11,8 @@ const components = [
   "index-bar",
   "tabs",
   "section",
+  "input",
+  "label",
 ];
 
 export default function Home() {

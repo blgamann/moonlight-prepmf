@@ -5,6 +5,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ProfileSm } from "@/components/profile";
+import { BadgeAnswerCount, BadgeSoulinkCount } from "./badge";
 
 export interface ItemProps {
   imageUrl: string;
@@ -80,12 +81,13 @@ export function ItemAnswerProfile({
   altText,
   answerTitle,
   answerText,
+  link,
 }: ProfileSmAnswerProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col border-b border-white/15 pb-8">
       <ProfileSm imageUrl={imageUrl} name={name} altText={altText} />
       <div className="flex flex-col flex-1 overflow-hidden mt-5">
-        <Link href="/profile/answer/detail">
+        <Link href={link ?? "#"}>
           <span className="text-xl font-semibold text-white/95 cursor-pointer hover:underline">
             {answerTitle}
           </span>
@@ -94,6 +96,29 @@ export function ItemAnswerProfile({
           {answerText}
         </p>
       </div>
+    </div>
+  );
+}
+
+export interface ItemQuestionProps {
+  question: string;
+  answerCount: number;
+  link: string;
+}
+
+export function ItemQuestion({
+  question,
+  answerCount,
+  link,
+}: ItemQuestionProps) {
+  return (
+    <div className="flex flex-col border-b border-white/15 pb-6">
+      <Link href={link ?? "#"}>
+        <span className="text-xl font-semibold text-white/95 cursor-pointer hover:underline">
+          {question}
+        </span>
+      </Link>
+      <BadgeAnswerCount count={answerCount} className="mt-2" />
     </div>
   );
 }

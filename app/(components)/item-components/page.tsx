@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Item, ItemAnswerProfile } from "@/components/item";
+import { Item, ItemAnswerProfile, ItemQuestion } from "@/components/item";
 import { Button } from "@/components/button";
 import { ItemAnswerBook } from "@/components/item";
 import dataJson from "../../../data.json"; // Import the JSON data
@@ -119,6 +119,15 @@ export default function SoulLinkList(/*{ data }: SoulLinkListProps*/) {
     },
   ];
 
+  // Create dummy data for ItemQuestion using JSON data
+  const dummyQuestionData: Question[] = [
+    {
+      id: 1,
+      question: "오늘 하루는 어땠나요?",
+      answerCount: 10,
+    },
+  ];
+
   // Use the dummy data instead of props
   const data = dummyData;
 
@@ -181,6 +190,20 @@ export default function SoulLinkList(/*{ data }: SoulLinkListProps*/) {
               answerTitle={item.answerTitle}
               answerText={item.answerText}
               altText={item.altText ?? `${item.name} 프로필`} // Ensure altText is always a string
+            />
+          </li>
+        ))}
+      </ul>
+
+      <h1 className="text-3xl font-bold my-12 text-white">
+        ItemQuestion Components
+      </h1>
+      <ul className="space-y-4">
+        {dummyQuestionData.map((item: Question) => (
+          <li key={item.id}>
+            <ItemQuestion
+              question={item.question}
+              answerCount={item.answerCount}
             />
           </li>
         ))}

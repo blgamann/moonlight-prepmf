@@ -10,7 +10,7 @@ export function Tabs({ tabs }: { tabs: TabItem[] }) {
   const [active, setActive] = useState(tabs[0].value);
 
   return (
-    <div className="max-w-[680px] mx-auto p-6">
+    <div className="w-full p-6">
       <div className="flex border-b border-white/15 mb-6">
         {tabs.map((tab) => (
           <button

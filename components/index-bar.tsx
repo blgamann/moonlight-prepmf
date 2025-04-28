@@ -38,7 +38,7 @@ export function IndexTop({
 }) {
   return (
     <div
-      className={`flex justify-between items-center border-b border-white/15 px-6 py-4 h-18 ${className}`}
+      className={`flex justify-between items-center border-b border-white/5 px-6 py-4 h-16 ${className}`}
     >
       <div className="text-white/60 text-base">2024년 04월 26일</div>
       {profile && <ProfileSmIndex {...profile} />}
@@ -53,6 +53,7 @@ export function IndexTopBack({
   profile,
   totalPages,
   currentPage,
+  className,
 }: {
   back?: string;
   title: string;
@@ -60,13 +61,16 @@ export function IndexTopBack({
   profile?: ProfileSmProps;
   totalPages?: number;
   currentPage?: number;
+  className?: string;
 }) {
   if (book && profile) {
     throw new Error("book과 profile은 동시에 존재할 수 없습니다.");
   }
 
   return (
-    <div className="relative flex items-center border-b border-white/15 px-6 py-4 h-18">
+    <div
+      className={`relative flex items-center border-b border-white/5 px-6 py-4 h-16 ${className}`}
+    >
       {/* 좌측 */}
       <IndexBack back={back} />
 
@@ -85,13 +89,14 @@ export function IndexTopBack({
           overflow-hidden
           text-ellipsis
           text-white/95
-          text-lg font-['NanumMyeongjo']
+          text-base font-['NanumMyeongjo']
+          line-clamp-1 
         "
         >
           {title}
         </div>
         {totalPages && currentPage && (
-          <div className="text-center text-white/40 text-sm tracking-widest mt-[-2px]">
+          <div className="text-center text-white/40 text-xs tracking-widest">
             {currentPage}/{totalPages}
           </div>
         )}
@@ -121,7 +126,7 @@ export function IndexBottom({
   forward?: string;
 }) {
   return (
-    <div className="flex justify-between items-center border-t border-white/15 px-6 py-4 h-18">
+    <div className="flex justify-between items-center border-t border-white/5 px-6 py-4 h-18">
       <IndexBack back={back} />
       <IndexForward forward={forward} />
     </div>
@@ -139,7 +144,7 @@ export function IndexBottomButton({
 }) {
   return (
     <div
-      className={`flex justify-between items-center border-t border-white/15 px-6 py-4 h-20 ${className}`}
+      className={`flex justify-between items-center border-t border-white/5 px-6 py-4 h-20 ${className}`}
     >
       <IndexBack back={back} />
       <ButtonDeep />

@@ -28,7 +28,7 @@ export default function ExpandedSidebar() {
   ];
 
   return (
-    <aside className="w-[336px] bg-zinc-950 border-r border-white/30 flex flex-col pt-8 fixed h-screen z-10 px-6">
+    <aside className="w-[290px] bg-zinc-950 border-r border-white/5 flex flex-col pt-4 fixed h-screen z-10 px-6">
       <div className="mb-20 pl-2">
         {/* Consider using a larger or different logo version for expanded state */}
         <Link href="/discover" className="flex items-center gap-2">
@@ -49,18 +49,18 @@ export default function ExpandedSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-5 px-3 py-3 rounded-lg ${
+              className={`flex items-center gap-4 px-3 py-2 rounded-lg ${
                 active
                   ? "bg-white/10 text-white font-semibold"
                   : "text-[#94a3b8] hover:bg-white/5 hover:text-white"
               } transition-all duration-200 ease-in-out group relative`}
             >
               <Icon
-                className={`w-[28px] h-[28px] stroke-current fill-none ${
+                className={`w-[22px] h-[22px] stroke-current fill-none ${
                   active ? "stroke-white" : "group-hover:stroke-white"
                 }`}
               />
-              <span className="text-lg font-medium flex-1">{item.label}</span>
+              <span className="text-base font-medium flex-1">{item.label}</span>
               {item.href === "/notification" && (
                 <span className="w-[8px] h-[8px] bg-[#6ABECF] rounded-full mr-1"></span>
               )}

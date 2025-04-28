@@ -10,6 +10,12 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
       // Add other domains if needed
+      {
+        protocol: "https",
+        hostname: "shopping-phinf.pstatic.net",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };

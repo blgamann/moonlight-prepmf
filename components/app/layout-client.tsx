@@ -23,11 +23,12 @@ export default function LayoutClient({
       )}
       {!isRoot && (
         <div className="hidden xl:block">
-          <ExpandedSidebar />
+          {/* <ExpandedSidebar /> */}
+          <CollapsedSidebar />
         </div>
       )}
       <main
-        className={isRoot ? "" : "pb-[60px] md:pb-0 md:pl-[72px] xl:pl-[336px]"}
+        className={isRoot ? "" : "pb-[60px] md:pb-0 md:pl-[72px] xl:pl-[72px]"}
       >
         {children}
       </main>
